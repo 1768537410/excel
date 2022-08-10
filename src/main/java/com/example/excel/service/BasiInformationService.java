@@ -30,6 +30,7 @@ public class BasiInformationService {
      * @return
      */
     public BasiInformation findBasiInformationByCustomerAbbreviation(String customerAbbreviation){
+
         return basiInformationMapper.selectBasiInformationBycustomerAbbreviation(customerAbbreviation);
     }
 

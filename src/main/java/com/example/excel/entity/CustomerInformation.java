@@ -22,12 +22,12 @@ public class CustomerInformation {
     /**
      * 客户简称
      */
-    @ExcelImport(value = "客户简称",required = true)
+    @ExcelImport(value = "客户简称",required = true,dataCompliance = true)
     private String customerAbbreviation;
     /**
      * 成本往来模板
      */
-    @ExcelImport("成本往来模板")
+    @ExcelImport(value = "成本往来模板",required = true)
     private String costTransactionTemplate;
     /**
      * 错误提示

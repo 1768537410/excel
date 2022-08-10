@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Currency;
 import java.util.List;
 
 @Controller
@@ -49,26 +52,52 @@ public class ImportController {
     @ResponseBody
     public void importClassC01(@RequestPart("file")MultipartFile file) throws Exception {
         List<BasiInformation> users = ExcelUtils.readMultipartFile(file,BasiInformation.class);
+        List<String> Basis = new ArrayList<>();
         for (BasiInformation user : users) {
-        if (user.getRowTips().length() == 0){
-            System.out.println(user.toString());
-            basiInformationService.insertBasiInformation(user);
+            Basis.add(user.getRowTips());
+        }
+        if (Basis.isEmpty()){
+            for (BasiInformation user : users) {
+                basiInformationService.insertBasiInformation(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
         }else {
-            System.out.println(user.getRowTips());
+            for (BasiInformation user : users) {
+                System.out.println(user.getRowNum() + user.getRowTips() );
+            }
         }
-        }
+//        if (user.getRowTips().length() == 0){
+//            System.out.println(user.toString());
+//            basiInformationService.insertBasiInformation(user);
+//        }else {
+//            System.out.println(user.getRowTips());
+//        }
     }
 
     @PostMapping("/classC02")
     @ResponseBody
     public void importClassC02(@RequestPart("file")MultipartFile file) throws Exception {
         List<CustomerInformation> users = ExcelUtils.readMultipartFile(file, CustomerInformation.class);
+        List<String> Customer = new ArrayList<>();
         for (CustomerInformation user : users) {
-            if (user.getRowTips().length() == 0){
-
-            }else {
-                System.out.println(user.getRowTips());
+            Customer.add(user.getRowTips());
+        }
+        Customer.removeAll(Collections.singleton(""));
+        if (Customer.isEmpty()){
+            for (CustomerInformation user : users) {
+                customerInformationService.insertCustomerInformation(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            for (CustomerInformation user : users) {
+                System.out.println(user.getRowNum() + user.getRowTips());
             }
         }
+//        if (user.getRowTips().length() == 0){
+//            System.out.println(user.getRowNum());
+//        }else {
+//            System.out.println(user.getRowTips());
+//        }
+
     }
 }

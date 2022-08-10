@@ -1,8 +1,15 @@
 package com.example.excel;
 
+import com.example.excel.entity.BasiInformation;
+import com.example.excel.service.BasiInformationService;
+import com.example.excel.service.CustomerInformationService;
+import com.example.excel.util.ExcelUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,10 +17,32 @@ import java.util.Date;
 import java.util.HashMap;
 
 @SpringBootTest
+@Component
 class ExcelApplicationTests {
+
+    @Autowired
+    private BasiInformationService basiInformationService;
+    private static BasiInformationService basiInformationServices;
+
+//    @Autowired
+//    private CustomerInformationService customerInformationService;
+//    private static CustomerInformationService customerInformationServices;
+
+//    public ExcelApplicationTests(){}
+//    public static ExcelApplicationTests excelApplicationTests;
+    @PostConstruct
+    public void init(){
+        basiInformationServices = basiInformationService;
+        System.out.println("basiInformationService");
+    }
 
     @Test
     void contextLoads() {
+    }
+    @Test
+    public  boolean test(){
+
+        return true;
     }
 
         public static void main(String[] args) {
@@ -49,27 +78,28 @@ class ExcelApplicationTests {
 //                System.out.println("不包含");
 //            }
 
-            //1、验证 yyyy-MM-dd HH:mm:dd 格式的日期
-            String date = "2020-01-25 12:36:45";
-            System.out.println("date "+isLegalDate(date.length(),date,"yyyy-MM-dd HH:mm:ss"));
-
-            //2、验证 yyyy-MM-dd 格式的日期
-            String yearMonthday = "2020-01-01";
-            System.out.println("yearMonthday: "+isLegalDate(yearMonthday.length(),yearMonthday,"yyyy-MM-dd"));
-
-            //3、验证 yyyy-MM 格式的日期
-            String yearMonth = "2020-02";
-            System.out.println("yearMonth: "+isLegalDate(yearMonth.length(),yearMonth,"yyyy-MM"));
-
-            //4、验证 yyyy 格式的日期
-            String year = "2020";
-            System.out.println("year: "+isLegalDate(year.length(),year,"yyyy"));
-
-            //5、验证 HH:mm:ss 格式的日期
-            String hms = "12:36:89";
-            System.out.println("hms: "+isLegalDate(hms.length(),hms,"HH:mm:ss"));
-
-
+//            //1、验证 yyyy-MM-dd HH:mm:dd 格式的日期
+//            String date = "2020-01-25 12:36:45";
+//            System.out.println("date "+isLegalDate(date.length(),date,"yyyy-MM-dd HH:mm:ss"));
+//
+//            //2、验证 yyyy-MM-dd 格式的日期
+//            String yearMonthday = "2020-01-01";
+//            System.out.println("yearMonthday: "+isLegalDate(yearMonthday.length(),yearMonthday,"yyyy-MM-dd"));
+//
+//            //3、验证 yyyy-MM 格式的日期
+//            String yearMonth = "2020-02";
+//            System.out.println("yearMonth: "+isLegalDate(yearMonth.length(),yearMonth,"yyyy-MM"));
+//
+//            //4、验证 yyyy 格式的日期
+//            String year = "2020";
+//            System.out.println("year: "+isLegalDate(year.length(),year,"yyyy"));
+//
+//            //5、验证 HH:mm:ss 格式的日期
+//            String hms = "12:36:89";
+//            System.out.println("hms: "+isLegalDate(hms.length(),hms,"HH:mm:ss"));
+            BasiInformation basiInformation = basiInformationServices.findBasiInformationByCustomerAbbreviation("长春市邮政局");
+            basiInformation.getCustomerName();
+            System.out.println(basiInformation.getCustomerName());
 
         }
     /**

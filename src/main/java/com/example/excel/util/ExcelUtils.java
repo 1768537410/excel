@@ -2,6 +2,8 @@ package com.example.excel.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.excel.service.BasiInformationService;
+import com.example.excel.service.CustomerInformationService;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
@@ -14,8 +16,11 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -36,7 +41,36 @@ import java.util.stream.Collectors;
  * @date 2021/12/17
  */
 @SuppressWarnings("unused")
+@Component
 public class ExcelUtils {
+
+
+//    @Autowired
+//    private BasiInformationService basiInformationService;
+//    private static BasiInformationService basiInformationServices;
+//
+//    @Autowired
+//    private CustomerInformationService customerInformationService;
+//    private static CustomerInformationService customerInformationServices;
+//
+//    @PostConstruct
+//    public void init(){
+//        basiInformationServices = basiInformationService;
+//        customerInformationServices = customerInformationService;
+//    }
+
+    private static BasiInformationService basiInformationService;
+
+    @Autowired
+    public void setBasiInformationService(BasiInformationService basiInformationService){
+        ExcelUtils.basiInformationService = basiInformationService;
+    }
+
+
+
+
+
+
 
     private static final String XLSX = ".xlsx";
     private static final String XLS = ".xls";
@@ -235,6 +269,15 @@ public class ExcelUtils {
                     errMsgList.add(String.format("[%s]日期格式不规范 2019-08-23", cname));
                 }
             }
+        }
+
+        //判断数据是否符合规定
+        boolean dataCompliance = annotation.dataCompliance();
+        if (dataCompliance){
+            if (basiInformationService.findBasiInformationByCustomerAbbreviation(val) == null){
+                errMsgList.add(String.format("[%s]填写的简称不存在", cname));
+            }
+
         }
 
 
