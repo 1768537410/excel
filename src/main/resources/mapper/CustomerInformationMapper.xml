@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.CustomerInformationMapper">
+    <sql id="insertCustomerInformation">
+        customer_abbreviation, cost_transaction_template
+    </sql>
+
+    <insert id="insertCustomerInformation" keyProperty="id">
+        insert into customer_information (<include refid="insertCustomerInformation"></include>)
+        values(
+       #{customerAbbreviation}, #{costTransactionTemplate}
+        )
+
+    </insert>
+
+</mapper>

@@ -2,7 +2,12 @@ package com.example.excel.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.example.excel.entity.BasiInformation;
+import com.example.excel.entity.CustomerInformation;
+import com.example.excel.mapper.BasiInformationMapper;
+import com.example.excel.service.BasiInformationService;
+import com.example.excel.service.CustomerInformationService;
 import com.example.excel.util.ExcelUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +20,12 @@ import java.util.List;
 @Controller
 @RequestMapping("import")
 public class ImportController {
+
+    @Autowired
+    private BasiInformationService basiInformationService;
+
+    @Autowired
+    private CustomerInformationService customerInformationService;
     /**
      * 导入解析为JSON
      * @param file
@@ -34,13 +45,30 @@ public class ImportController {
      * @param file
      * @throws Exception
      */
-    @PostMapping("/class")
+    @PostMapping("/classC01")
     @ResponseBody
-    public void importClass(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC01(@RequestPart("file")MultipartFile file) throws Exception {
         List<BasiInformation> users = ExcelUtils.readMultipartFile(file,BasiInformation.class);
         for (BasiInformation user : users) {
+        if (user.getRowTips().length() == 0){
             System.out.println(user.toString());
+            basiInformationService.insertBasiInformation(user);
+        }else {
             System.out.println(user.getRowTips());
+        }
+        }
+    }
+
+    @PostMapping("/classC02")
+    @ResponseBody
+    public void importClassC02(@RequestPart("file")MultipartFile file) throws Exception {
+        List<CustomerInformation> users = ExcelUtils.readMultipartFile(file, CustomerInformation.class);
+        for (CustomerInformation user : users) {
+            if (user.getRowTips().length() == 0){
+
+            }else {
+                System.out.println(user.getRowTips());
+            }
         }
     }
 }

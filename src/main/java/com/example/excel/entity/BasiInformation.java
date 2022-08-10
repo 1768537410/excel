@@ -1,14 +1,23 @@
 package com.example.excel.entity;
 
-import com.example.excel.util.ExcelExport;
 import com.example.excel.util.ExcelImport;
 import lombok.Data;
 
-import java.text.SimpleDateFormat;
-
+/**
+ * C01
+ */
 @Data
 public class BasiInformation {
 
+
+    /**
+     * 获取行号
+     */
+    private double rowNum;
+    /**
+     * 主键
+     */
+    private int id;
     /**
      * 客户全称
      */
@@ -59,8 +68,8 @@ public class BasiInformation {
     /**
      * 成立时间
      */
-    @ExcelImport("成立时间")
-    private SimpleDateFormat establishmentTime;
+    @ExcelImport(value = "成立时间",dateTime = true)
+    private String establishmentTime;
     /**
      * 营业期限
      */
@@ -69,7 +78,7 @@ public class BasiInformation {
     /**
      * 注册地址（省）
      */
-    @ExcelImport("注册地址（省）")
+    @ExcelImport(value = "注册地址（省）",notKeyWord = "省")
     private String registeredProvince;
     /**
      * 注册地址（市）
@@ -99,7 +108,7 @@ public class BasiInformation {
     /**
      * 办公地址（省）
      */
-    @ExcelImport(value = "办公地址（省）",required = true)
+    @ExcelImport(value = "办公地址（省）",required = true,notKeyWord = "省")
     private String officeProvince;
     /**
      * 办公地址（市）
@@ -109,7 +118,7 @@ public class BasiInformation {
     /**
      *办公地址（县）
      */
-    @ExcelImport("办公地址（县））")
+    @ExcelImport("办公地址（县）")
     private String officeCounty;
     /**
      * 详细办公地址
@@ -139,7 +148,7 @@ public class BasiInformation {
     /**
      * 业务员
      */
-    @ExcelImport(value = "业务员",required = true)
+    @ExcelImport(value = "业务员",required = true,departmentCommissioner = true)
     private String salesperson;
     /**
      * 签约状态
@@ -211,13 +220,10 @@ public class BasiInformation {
      */
     private String rowTips;
     /**
-     * 获取行号
-     */
-    private int rowNum;
-    /**
      * 原始数据
      */
     private String  rowData;
+
 
 
 

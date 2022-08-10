@@ -2,6 +2,8 @@ package com.example.excel.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -21,11 +23,13 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author 张钧诚
@@ -80,7 +84,8 @@ public class ExcelUtils {
 
     private static <T> List<T> getBeanList(JSONArray array, Class<T> clazz) throws Exception {
         List<T> list = new ArrayList<>();
-        Map<Integer, String> uniqueMap = new HashMap<>(16);
+       // Map<Integer, String> uniqueMap = new HashMap<>(16);
+        MultiValuedMap<Integer, String> uniqueMap = new ArrayListValuedHashMap<>(16);
         for (int i = 0; i < array.size(); i++) {
             list.add(getBean(clazz, array.getJSONObject(i), uniqueMap));
         }
@@ -90,12 +95,13 @@ public class ExcelUtils {
     /**
      * 获取每个对象的数据
      */
-    private static <T> T getBean(Class<T> c, JSONObject obj, Map<Integer, String> uniqueMap) throws Exception {
+    private static <T> T getBean(Class<T> c, JSONObject obj, MultiValuedMap<Integer, String> uniqueMap) throws Exception {
         T t = c.newInstance();
         Field[] fields = c.getDeclaredFields();
         List<String> errMsgList = new ArrayList<>();
         boolean hasRowTipsField = false;
         StringBuilder uniqueBuilder = new StringBuilder();
+        List uniqueList = new ArrayList();
         int rowNum = 0;
         for (Field field : fields) {
             // 行号
@@ -121,15 +127,22 @@ public class ExcelUtils {
         }
         // 数据唯一性校验
         if (uniqueBuilder.length() > 0) {
-            if (uniqueMap.containsValue(uniqueBuilder.toString())) {
-                Set<Integer> rowNumKeys = uniqueMap.keySet();
-                for (Integer num : rowNumKeys) {
-                    if (uniqueMap.get(num).equals(uniqueBuilder.toString())) {
-                        errMsgList.add(String.format("数据唯一性校验失败,(%s)与第%s行重复)", uniqueBuilder, num));
+            String unique = uniqueBuilder.toString();
+            String[] split = unique.split(",");
+            //数组转集合
+            List<String> collect = Arrays.stream(split).collect(Collectors.toList());
+            for (int i = 0;i<collect.size();i++){
+
+                if (uniqueMap.containsValue(collect.get(i))) {
+                    Set<Integer> rowNumKeys = uniqueMap.keySet();
+                    for (Integer num : rowNumKeys) {
+                        if (uniqueMap.get(num).contains(collect.get(i))) {
+                            errMsgList.add(String.format("数据唯一性校验失败,(%s)与第%s行重复)", collect.get(i), num));
+                        }
                     }
+                } else {
+                    uniqueMap.put(rowNum, collect.get(i));
                 }
-            } else {
-                uniqueMap.put(rowNum, uniqueBuilder.toString());
             }
         }
         // 失败处理
@@ -184,12 +197,45 @@ public class ExcelUtils {
         boolean unique = annotation.unique();
         if (unique) {
             if (uniqueBuilder.length() > 0) {
-                uniqueBuilder.append("--").append(val);
+                uniqueBuilder.append(",").append(val);
             } else {
                 uniqueBuilder.append(val);
             }
         }
         //判断是否带关键字
+        String keyWord = annotation.notKeyWord();
+        if (keyWord != null && keyWord.length() != 0){
+            int lastIndex=val.lastIndexOf(keyWord);//字符串第一个字符最后出现的下标
+            if(lastIndex == -1) {
+                System.out.println("不存在字符串 省");
+            }
+            else {
+                errMsgList.add(String.format("[%s]不需要写省", cname));
+            }
+        }
+
+        //指系统中业务员的岗位名称，详见sheet4  业务二部专员2
+        boolean departmentCommissioner = annotation.departmentCommissioner();
+        if (departmentCommissioner) {
+             if (val.contains("专员")){
+                 System.out.println("可以说填写规范");
+             }else {
+                 errMsgList.add(String.format("[%s]指系统中业务员的岗位名称，详见sheet4", cname));
+             }
+        }
+
+        //判断日期格式是否规范 2019-08-23
+        boolean dateTime = annotation.dateTime();
+        if (dateTime){
+            if (val != null && val.length() != 0){
+                System.out.println(isLegalDate(val.length(),val,"yyyy-MM-dd"));
+                if (isLegalDate(val.length(),val,"yyyy-MM-dd")){
+
+                }else {
+                    errMsgList.add(String.format("[%s]日期格式不规范 2019-08-23", cname));
+                }
+            }
+        }
 
 
         // 判断是否超过最大长度
@@ -241,6 +287,27 @@ public class ExcelUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据时间 和时间格式 校验是否正确
+     * @param length 校验的长度
+     * @param sDate 校验的日期
+     * @param format 校验的格式
+     * @return
+     */
+    public static boolean isLegalDate(int length, String sDate,String format) {
+        int legalLen = length;
+        if ((sDate == null) || (sDate.length() != legalLen)) {
+            return false;
+        }
+        DateFormat formatter = new SimpleDateFormat(format);
+        try {
+            Date date = formatter.parse(sDate);
+            return sDate.equals(formatter.format(date));
+        } catch (Exception e) {
+            return false;
         }
     }
 

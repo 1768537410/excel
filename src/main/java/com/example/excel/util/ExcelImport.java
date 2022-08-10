@@ -42,4 +42,22 @@ public @interface ExcelImport {
      */
     boolean unique() default false;
 
+    /**
+     * 不允许包含关键字省
+     * @return
+     */
+    String notKeyWord() default "";
+
+    /**
+     * 填写格式是否规范（需要填写对应岗位） 业务二部专员1
+     */
+    boolean departmentCommissioner() default false;
+
+    /**
+     * 判断日期格式是否规范 2019-08-23
+     */
+    boolean dateTime() default false;
+
+
+
 }
