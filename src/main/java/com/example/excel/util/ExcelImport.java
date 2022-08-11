@@ -71,6 +71,32 @@ public @interface ExcelImport {
      */
     boolean customerNumber() default false;
 
+    /**
+     * 判断数据是否符合规定
+     * 客户简称 是否与C04中的子客户简称相等
+     */
+    boolean dataCompliance04() default false;
+
+    /**
+     * 判断数据是否符合规定
+     *  客户编号 是否与C04中的子客户编号相等
+     * @return
+     */
+    boolean customerNumber04() default false;
+
+    /**
+     * 判断C05中 按整体费用和比例收取服务费 的 是 否
+     * @return
+     */
+    boolean co5TF() default false;
+
+    /**
+     * 必填方法
+     * 与 co5TF() 配合使用  当co5TF()判断内容为是的时候触发
+     * @return
+     */
+    boolean c05required() default false;
+
 
 
 }

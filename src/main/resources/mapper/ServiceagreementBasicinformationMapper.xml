@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.ServiceagreementBasicinformationMapper">
+
+    <sql id="insertServiceagreementBasicinformations">
+        serviceAgreement_name,applicableStart_time,customer_abbreviation,
+        customer_number,subcustomer_number,subcustomer_abbreviation,
+        status,remarks,chargeService_fee,
+        socialSecurity_fee,medicalInsurance_costs,workInjury_expenses,
+        providentFund_fee,commercialInsurance_costs,salary_costs,
+        union_fees,disabilityInsurance_fee,charges,
+        serviceCharge,taxFiling_fee,vehicleRental_fee,
+        oneTime_fee,otherCosts,proportion,
+        chargingMethod,serviceAgreement_number
+    </sql>
+
+
+
+    <insert id="insertServiceagreementBasicinformation" keyProperty="id">
+        insert into serviceagreement_basicinformation (<include refid="insertServiceagreementBasicinformations"></include>)
+        values(
+        #{serviceAgreementName}, #{applicableStartTime}, #{customerAbbreviation},
+        #{customerNumber}, #{subcustomerNumber}, #{subcustomerAbbreviation},
+        #{status}, #{remarks}, #{chargeServiceFee},
+        #{socialSecurityFee}, #{medicalInsuranceCosts}, #{workInjuryExpenses},
+        #{providentFundFee}, #{commercialInsuranceCosts}, #{salaryCosts},
+        #{unionFees}, #{disabilityInsuranceFee}, #{charges},
+        #{serviceCharge}, #{taxFilingFee}, #{vehicleRentalFee},
+        #{oneTimeFee}, #{otherCosts}, #{proportion},
+        #{chargingMethod}, #{serviceAgreementNumber}
+        )
+    </insert>
+</mapper>
+

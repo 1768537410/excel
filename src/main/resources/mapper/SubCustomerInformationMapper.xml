@@ -18,6 +18,18 @@
         )
     </insert>
 
+    <select id="selectSubCustomerInformationBycustomerAbbreviation"
+            resultType="com.example.excel.entity.SubCustomerInformation">
+        select distinct customer_abbreviation,customer_number from subcustomer_information
+        where subcustomer_abbreviation = #{subcustomerAbbreviation}
+    </select>
+
+    <select id="selectSubCustomerInformationBycustomerNumber"
+            resultType="com.example.excel.entity.SubCustomerInformation">
+        select Distinct customer_abbreviation,customer_number from subcustomer_information
+        where subcustomer_number = #{subcustomerNumber}
+    </select>
+
 
 </mapper>
 

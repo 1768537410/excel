@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.excel.service.BasiInformationService;
 import com.example.excel.service.CustomerInformationService;
+import com.example.excel.service.SubCustomerInformationService;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
@@ -49,6 +50,13 @@ public class ExcelUtils {
     @Autowired
     public void setBasiInformationService(BasiInformationService basiInformationService){
         ExcelUtils.basiInformationService = basiInformationService;
+    }
+
+    private static SubCustomerInformationService subCustomerInformationService;
+
+    @Autowired
+    public void setSubCustomerInformationService(SubCustomerInformationService subCustomerInformationService){
+        ExcelUtils.subCustomerInformationService = subCustomerInformationService;
     }
 
 
@@ -116,6 +124,9 @@ public class ExcelUtils {
         boolean hasRowTipsField = false;
         StringBuilder uniqueBuilder = new StringBuilder();
         List uniqueList = new ArrayList();
+        //用于判断C05中的是否
+        List Yes = new ArrayList();
+
         int rowNum = 0;
         for (Field field : fields) {
             // 行号
@@ -137,7 +148,7 @@ public class ExcelUtils {
                 continue;
             }
             // 设置对应属性值
-            setFieldValue(t, field, obj, uniqueBuilder, errMsgList);
+            setFieldValue(t, field, obj, uniqueBuilder, errMsgList,Yes);
         }
         // 数据唯一性校验
         if (uniqueBuilder.length() > 0) {
@@ -182,7 +193,8 @@ public class ExcelUtils {
         return t;
     }
 
-    private static <T> void setFieldValue(T t, Field field, JSONObject obj, StringBuilder uniqueBuilder, List<String> errMsgList) {
+    private static <T> void setFieldValue(T t, Field field, JSONObject obj, StringBuilder uniqueBuilder, List<String> errMsgList,List Yes) {
+
         // 获取 ExcelImport 注解属性
         ExcelImport annotation = field.getAnnotation(ExcelImport.class);
         if (annotation == null) {
@@ -246,25 +258,56 @@ public class ExcelUtils {
                 if (isLegalDate(val.length(),val,"yyyy-MM-dd")){
 
                 }else {
-                    errMsgList.add(String.format("[%s]日期格式不规范 2019-08-23", cname));
+                    errMsgList.add(String.format("[%s]日期格式不规范 eg:2019-08-23", cname));
                 }
             }
         }
 
         //判断数据是否符合规定（简称需要与C-01中填写的客户简称保持一致）
         boolean dataCompliance = annotation.dataCompliance();
-        if (dataCompliance){
+        if (dataCompliance && val != ""){
             if (basiInformationService.findBasiInformationByCustomerAbbreviation(val) == null){
                 errMsgList.add(String.format("[%s]填写的简称需要与C-01中填写的客户简称保持一致", cname));
             }
         }
         //判断数据是否符合规定（编号需要与C-01中填写的客户编号保持一致）
         boolean customerNumber = annotation.customerNumber();
-        if (customerNumber){
+        if (customerNumber && val != ""){
             if (basiInformationService.findBasiInformationByCustomerNumber(val) == null){
                 errMsgList.add(String.format("[%s]填写的编号需要与C-01中填写的客户编号保持一致", cname));
             }
         }
+
+        //判断数据是否符合规定（简称需要与C-04中填写的客户简称保持一致）
+        boolean dataCompliance04 = annotation.dataCompliance04();
+        if (dataCompliance04 && val != ""){
+            if (subCustomerInformationService.findSubCustomerInformationByCustomerAbbreviation(val) == null){
+                errMsgList.add(String.format("[%s]填写的简称需要与C-04中填写的子客户简称保持一致", cname));
+            }
+        }
+        //判断数据是否符合规定（编号需要与C-04中填写的客户编号保持一致）
+        boolean customerNumber04 = annotation.customerNumber04();
+        if (customerNumber04 && val != ""){
+            if (subCustomerInformationService.findSubCustomerInformationByCustomerNumber(val) == null){
+                errMsgList.add(String.format("[%s]填写的编号需要与C-04中填写的子客户编号保持一致", cname));
+            }
+        }
+
+        //判断C05 按整体费用和比例收取服务费 内容 当此项选择“是”时，黄色背景列每一项都需要填写；当此项选择“否”时，黄色背景列留空
+        boolean co5TF = annotation.co5TF();
+        if (co5TF && val.equals("是")){
+            Yes.add(1);
+        }
+        boolean c05required = annotation.c05required();
+        if (c05required  && val.isEmpty() && null != Yes && Yes.size() != 0){
+            errMsgList.add(String.format("[%s]不能为空", cname));
+        }
+
+
+
+
+
+
 
         // 判断是否超过最大长度
         int maxLength = annotation.maxLength();

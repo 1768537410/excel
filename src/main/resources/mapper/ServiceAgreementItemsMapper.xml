@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.ServiceAgreementItemsMapper">
+
+
+    <sql id="insertServiceAgreementItemsMapper">
+        Customer_name,Customer_abbreviation, customer_number,
+        affiliated_group,enterprise_nature, uniform_SCCode,
+        legal_representative,registered_apital, Business_scope,
+        Establishment_time,Business_period,Registered_province,
+        Registered_city,Registered_county,Detailed_address,
+        Copy_license,Registration_information,Office_province,
+        Office_city,Office_county,Office_address,
+        Zip_code,Remarks,Foreign_entrusted,
+        Business_department,Salesperson,Contract_status,
+        Contact_one,Contact_phone_one,Contact_mobile_one,
+        Contact_email_one,Contact_mailing_ddress_one,Contact_note_one,
+        Contact_two,Contact_phone_two,Contact_mobile_two,
+        Contact_email_two,Contact_mailing_ddress_two,Contact_note_two
+    </sql>
+
+    <insert id="insertBasiInformation"  keyProperty="id">
+        insert into basic_information (<include refid="insertServiceAgreementItemsMapper"></include>)
+        values(
+               #{customerName}, #{customerAbbreviation}, #{customerNumber},
+               #{affiliatedGroup}, #{enterpriseNature}, #{uniformSCCode},
+               #{legalRepresentative}, #{registeredApital},#{businessScope},
+               #{establishmentTime}, #{businessPeriod},#{registeredProvince},
+               #{registeredCity}, #{registeredCounty},#{detailedAddress},
+               #{copyLicense}, #{registrationInformation},#{officeProvince},
+               #{officeCity}, #{officeCounty},#{officeAddress},
+               #{zipCode}, #{remarks},#{foreignEntrusted},
+               #{businessDepartment}, #{salesperson},#{contractStatus},
+               #{contactOne}, #{contactPhoneOne},#{contactMobileOne},
+               #{contactEmailOne}, #{contactMailingDdressOne},#{contactNoteOne},
+               #{contactTwo}, #{contactPhoneTwo},#{contactMobileTwo},
+               #{contactEmailTwo}, #{contactMailingDdressTwo},#{contactNoteTwo}
+               )
+    </insert>
+
+    <select id="selectBasiInformationBycustomerAbbreviation"
+            resultType="com.example.excel.entity.BasiInformation">
+        select Customer_name,customer_number from basic_information
+        where Customer_abbreviation = #{customerAbbreviation}
+    </select>
+
+    <select id="selectBasiInformationBycustomerNumber"
+            resultType="com.example.excel.entity.BasiInformation">
+        select Customer_name,Customer_abbreviation from basic_information
+        where customer_number = #{customerNumber}
+    </select>
+
+</mapper>

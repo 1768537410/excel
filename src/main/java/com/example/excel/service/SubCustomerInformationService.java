@@ -1,5 +1,6 @@
 package com.example.excel.service;
 
+import com.example.excel.entity.BasiInformation;
 import com.example.excel.entity.CustomerSettlementUnit;
 import com.example.excel.entity.SubCustomerInformation;
 import com.example.excel.mapper.SubCustomerInformationMapper;
@@ -24,4 +25,25 @@ public class SubCustomerInformationService {
         int rows = subCustomerInformationMapper.insertSubCustomerInformation(subCustomerInformation);
         return rows;
     }
+
+    /**
+     * 根据子客户简称查询C04中的客户简称
+     * @param customerAbbreviation
+     * @return
+     */
+    public SubCustomerInformation findSubCustomerInformationByCustomerAbbreviation(String customerAbbreviation){
+
+        return subCustomerInformationMapper.selectSubCustomerInformationBycustomerAbbreviation(customerAbbreviation);
+    }
+
+    /**
+     * 用子客户编号查询C04中的客户
+     * @param customerNumber
+     * @return
+     */
+    public SubCustomerInformation findSubCustomerInformationByCustomerNumber(String customerNumber){
+
+        return subCustomerInformationMapper.selectSubCustomerInformationBycustomerNumber(customerNumber);
+    }
+
 }
