@@ -3,9 +3,12 @@ package com.example.excel.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.example.excel.entity.BasiInformation;
 import com.example.excel.entity.CustomerInformation;
-import com.example.excel.mapper.BasiInformationMapper;
+import com.example.excel.entity.CustomerSettlementUnit;
+import com.example.excel.entity.SubCustomerInformation;
 import com.example.excel.service.BasiInformationService;
 import com.example.excel.service.CustomerInformationService;
+import com.example.excel.service.CustomerSettlementUnitService;
+import com.example.excel.service.SubCustomerInformationService;
 import com.example.excel.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +32,13 @@ public class ImportController {
 
     @Autowired
     private CustomerInformationService customerInformationService;
+
+    @Autowired
+    private CustomerSettlementUnitService customerSettlementUnitService;
+    @Autowired
+    private SubCustomerInformationService subCustomerInformationService;
+
+
     /**
      * 导入解析为JSON
      * @param file
@@ -51,53 +61,114 @@ public class ImportController {
     @PostMapping("/classC01")
     @ResponseBody
     public void importClassC01(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
         List<BasiInformation> users = ExcelUtils.readMultipartFile(file,BasiInformation.class);
+        //创建一个集合来存放错误信息
         List<String> Basis = new ArrayList<>();
+        //循环遍历向list中添加错误信息
         for (BasiInformation user : users) {
             Basis.add(user.getRowTips());
         }
+        //移除list中所用空的信息
+        Basis.removeAll(Collections.singleton(""));
+        //如果list为空
         if (Basis.isEmpty()){
+            //循环遍历导入数据库
             for (BasiInformation user : users) {
                 basiInformationService.insertBasiInformation(user);
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
+            //循环遍历输出行数和错误信息
             for (BasiInformation user : users) {
                 System.out.println(user.getRowNum() + user.getRowTips() );
             }
         }
-//        if (user.getRowTips().length() == 0){
-//            System.out.println(user.toString());
-//            basiInformationService.insertBasiInformation(user);
-//        }else {
-//            System.out.println(user.getRowTips());
-//        }
     }
 
     @PostMapping("/classC02")
     @ResponseBody
     public void importClassC02(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
         List<CustomerInformation> users = ExcelUtils.readMultipartFile(file, CustomerInformation.class);
+        //创建一个集合来存放错误信息
         List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
         for (CustomerInformation user : users) {
             Customer.add(user.getRowTips());
         }
+        //移除list中所用空的信息
         Customer.removeAll(Collections.singleton(""));
+        //如果list为空
         if (Customer.isEmpty()){
+            //循环遍历导入数据库
             for (CustomerInformation user : users) {
                 customerInformationService.insertCustomerInformation(user);
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
+            //循环遍历输出行数和错误信息
             for (CustomerInformation user : users) {
                 System.out.println(user.getRowNum() + user.getRowTips());
             }
         }
-//        if (user.getRowTips().length() == 0){
-//            System.out.println(user.getRowNum());
-//        }else {
-//            System.out.println(user.getRowTips());
-//        }
-
     }
+
+    @PostMapping("/classC03")
+    @ResponseBody
+    public void importClassC03(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<CustomerSettlementUnit> users = ExcelUtils.readMultipartFile(file, CustomerSettlementUnit.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (CustomerSettlementUnit user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (CustomerSettlementUnit user : users) {
+                customerSettlementUnitService.insertCustomerSettlementUnit(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (CustomerSettlementUnit user : users) {
+                System.out.println(user.getRowNum() + user.getRowTips());
+            }
+        }
+    }
+
+    @PostMapping("/classC04")
+    @ResponseBody
+    public void importClassC04(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<SubCustomerInformation> users = ExcelUtils.readMultipartFile(file, SubCustomerInformation.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (SubCustomerInformation user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (SubCustomerInformation user : users) {
+                subCustomerInformationService.insertSubCustomerInformation(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (SubCustomerInformation user : users) {
+                System.out.println(user.getRowNum() + user.getRowTips());
+            }
+        }
+    }
+
+
 }

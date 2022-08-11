@@ -60,9 +60,16 @@ public @interface ExcelImport {
 
     /**
      * 判断数据是否符合规定
-     * 用于C02 中的客户简称 是否与C01中的客户简称相等
+     * 客户简称 是否与C01中的客户简称相等
      */
     boolean dataCompliance() default false;
+
+    /**
+     * 判断数据是否符合规定
+     *  客户编号 是否与C01中的客户编号相等
+     * @return
+     */
+    boolean customerNumber() default false;
 
 
 

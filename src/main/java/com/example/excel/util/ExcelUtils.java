@@ -44,32 +44,12 @@ import java.util.stream.Collectors;
 @Component
 public class ExcelUtils {
 
-
-//    @Autowired
-//    private BasiInformationService basiInformationService;
-//    private static BasiInformationService basiInformationServices;
-//
-//    @Autowired
-//    private CustomerInformationService customerInformationService;
-//    private static CustomerInformationService customerInformationServices;
-//
-//    @PostConstruct
-//    public void init(){
-//        basiInformationServices = basiInformationService;
-//        customerInformationServices = customerInformationService;
-//    }
-
     private static BasiInformationService basiInformationService;
 
     @Autowired
     public void setBasiInformationService(BasiInformationService basiInformationService){
         ExcelUtils.basiInformationService = basiInformationService;
     }
-
-
-
-
-
 
 
     private static final String XLSX = ".xlsx";
@@ -241,7 +221,7 @@ public class ExcelUtils {
         if (keyWord != null && keyWord.length() != 0){
             int lastIndex=val.lastIndexOf(keyWord);//字符串第一个字符最后出现的下标
             if(lastIndex == -1) {
-                System.out.println("不存在字符串 省");
+//                System.out.println("不存在字符串 省");
             }
             else {
                 errMsgList.add(String.format("[%s]不需要写省", cname));
@@ -252,7 +232,7 @@ public class ExcelUtils {
         boolean departmentCommissioner = annotation.departmentCommissioner();
         if (departmentCommissioner) {
              if (val.contains("专员")){
-                 System.out.println("可以说填写规范");
+//                 System.out.println("可以说填写规范");
              }else {
                  errMsgList.add(String.format("[%s]指系统中业务员的岗位名称，详见sheet4", cname));
              }
@@ -271,15 +251,20 @@ public class ExcelUtils {
             }
         }
 
-        //判断数据是否符合规定
+        //判断数据是否符合规定（简称需要与C-01中填写的客户简称保持一致）
         boolean dataCompliance = annotation.dataCompliance();
         if (dataCompliance){
             if (basiInformationService.findBasiInformationByCustomerAbbreviation(val) == null){
-                errMsgList.add(String.format("[%s]填写的简称不存在", cname));
+                errMsgList.add(String.format("[%s]填写的简称需要与C-01中填写的客户简称保持一致", cname));
             }
-
         }
-
+        //判断数据是否符合规定（编号需要与C-01中填写的客户编号保持一致）
+        boolean customerNumber = annotation.customerNumber();
+        if (customerNumber){
+            if (basiInformationService.findBasiInformationByCustomerNumber(val) == null){
+                errMsgList.add(String.format("[%s]填写的编号需要与C-01中填写的客户编号保持一致", cname));
+            }
+        }
 
         // 判断是否超过最大长度
         int maxLength = annotation.maxLength();

@@ -25,13 +25,23 @@ public class BasiInformationService {
     }
 
     /**
-     * 根据C02的客户简称查询C01中的客户简称
+     * 根据客户简称查询C01中的客户简称
      * @param customerAbbreviation
      * @return
      */
     public BasiInformation findBasiInformationByCustomerAbbreviation(String customerAbbreviation){
 
         return basiInformationMapper.selectBasiInformationBycustomerAbbreviation(customerAbbreviation);
+    }
+
+    /**
+     * 用客户编号查询C01中的客户
+     * @param customerNumber
+     * @return
+     */
+    public BasiInformation findBasiInformationByCustomerNumber(String customerNumber){
+
+        return basiInformationMapper.selectBasiInformationBycustomerNumber(customerNumber);
     }
 
 

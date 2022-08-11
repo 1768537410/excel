@@ -46,4 +46,10 @@
         where Customer_abbreviation = #{customerAbbreviation}
     </select>
 
+    <select id="selectBasiInformationBycustomerNumber"
+            resultType="com.example.excel.entity.BasiInformation">
+        select Customer_name,Customer_abbreviation from basic_information
+        where customer_number = #{customerNumber}
+    </select>
+
 </mapper>

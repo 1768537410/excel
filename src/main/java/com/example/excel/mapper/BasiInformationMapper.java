@@ -16,10 +16,17 @@ public interface BasiInformationMapper {
     int insertBasiInformation(BasiInformation basiInformation);
 
     /**
-     * 用C02中的客户简称查询C01中的客户
+     * 用客户简称查询C01中的客户
      * @param customerAbbreviation
      * @return
      */
     BasiInformation selectBasiInformationBycustomerAbbreviation(String customerAbbreviation);
+
+    /**
+     * 用客户编号查询C01中的客户
+     * @param customerNumber
+     * @return
+     */
+    BasiInformation selectBasiInformationBycustomerNumber(String customerNumber);
 
 }
