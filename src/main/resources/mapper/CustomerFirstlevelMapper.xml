@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.CustomerFirstlevelMapper">
+
+
+    <sql id="insertCustomerFirstlevels">
+        contract_title,serviceAgreement_name
+    </sql>
+    <insert id="insertCustomerFirstlevel" keyProperty="id">
+        insert into customer_firstlevel (<include refid="insertCustomerFirstlevels"></include>)
+        values(
+        #{contractTitle}, #{serviceAgreementName}
+        )
+    </insert>
+
+
+</mapper>

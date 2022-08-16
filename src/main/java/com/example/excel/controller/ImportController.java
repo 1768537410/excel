@@ -259,7 +259,6 @@ public class ImportController {
         }
     }
 
-
     @PostMapping("/classC06")
     @ResponseBody
     public void importClassC06(@RequestPart("file")MultipartFile file) throws Exception {
@@ -288,8 +287,6 @@ public class ImportController {
         }
     }
 
-
-
     @PostMapping("/classC07")
     @ResponseBody
     public void importClassC07(@RequestPart("file")MultipartFile file) throws Exception {
@@ -313,6 +310,34 @@ public class ImportController {
         }else {
             //循环遍历输出行数和错误信息
             for (CustomerContractBasicInformation user : users) {
+                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+            }
+        }
+    }
+
+
+    @PostMapping("/classC08")
+    @ResponseBody
+    public void importClassC08(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<CustomerFirstlevel> users = ExcelUtils.readMultipartFile(file, CustomerFirstlevel.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (CustomerFirstlevel user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (CustomerFirstlevel user : users) {
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (CustomerFirstlevel user : users) {
                 System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
             }
         }
