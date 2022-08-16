@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.CustomerContractBasicInformationMapper">
+
+    <sql id="insertCustomerContractBasicInformation">
+        customer_abbreviation,contract_title, contract_type,
+        contract_version,contract_level, first_contractName,
+        generation_conditions,sign_type, signing_time,
+        contract_startTime,contract_termination,contract_status,
+        termination_method,end_date,lastFee_collectionTime,
+        reason_termination,number_signings,number_copiesSigned,
+        former_contractName,contractExpiration_reminderDays,monthlyBill_generationTime,
+        monthlyBill_generationTime,payday,agreedPaymentDate,
+        agreedPaymentMonthAndDay,account,depositaryBank,
+        bankAccountName,returnTerms,workLnjuryClause,
+        retirementClause,driverTerms,occupationalDiseaseClause,
+        cardinalTerms,rolloutStatus,archiveStatus,
+        automaticExtensionClause,other_pecialTermsAndConditions,remark,
+        contact_one,contact_phone_one,contact_mobile_one,
+        contact_email_one,contact_mailing_ddress_one,contact_note_one,
+        contact_two,contact_phone_two,contact_mobile_two,
+        contact_email_two,contact_mailing_ddress_two,contact_note_two,
+        contract_number,reminder_notReceipt
+    </sql>
+
+    <insert id="insertCustomerContractBasicInformation"  keyProperty="id">
+        insert into customercontract_basicinformation (<include refid="insertCustomerContractBasicInformation"></include>)
+        values(
+        #{customerAbbreviation}, #{contractTitle}, #{contractType},
+        #{contractVersion}, #{contractLevel}, #{firstContractName},
+        #{generationConditions}, #{signType},#{signingTime},
+        #{contractStartTime}, #{contractTermination},#{contractStatus},
+        #{terminationMethod}, #{endDate},#{lastFeeCollectionTime},
+        #{reasonTermination}, #{numberSignings},#{numberCopiesSigned},
+        #{formerContractName}, #{contractExpirationReminderDays},#{monthlyBillGenerationTime},
+        #{annualBillGenerationTime}, #{payday},#{agreedPaymentDate},
+        #{agreedPaymentMonthAndDay}, #{account},#{depositaryBank},
+        #{bankAccountName}, #{returnTerms},#{workLnjuryClause},
+        #{retirementClause}, #{driverTerms},#{occupationalDiseaseClause},
+        #{cardinalTerms}, #{rolloutStatus},#{archiveStatus},
+        #{automaticExtensionClause}, #{otherPecialTermsAndConditions},#{remark},
+        #{contactOne}, #{contactPhoneOne},#{contactMobileOne},
+        #{contactEmailOne}, #{contactMailingDdressOne},#{contactNoteOne},
+        #{contactTwo}, #{contactPhoneTwo},#{contactMobileTwo},
+        #{contactEmailTwo}, #{contactMailingDdressTwo},#{contactNoteTwo},
+        #{contractNumber}, #{reminderNotReceipt}
+        )
+    </insert>
+</mapper>

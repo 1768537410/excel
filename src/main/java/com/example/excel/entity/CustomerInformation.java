@@ -4,7 +4,7 @@ import com.example.excel.util.ExcelImport;
 import lombok.Data;
 
 /**
- * C02
+ * C02 1表 客户成本往来设定表
  */
 @Data
 public class CustomerInformation {

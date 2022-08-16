@@ -59,9 +59,9 @@ public class ServiceagreementBasicinformation {
     @ExcelImport("备注")
     private String remarks;
     /**
-     * 按整体费用和比例收取服务费
+     * 按整体费用和比例收取服务费（0-否，1-是）
      */
-    @ExcelImport(value = "按整体费用和比例收取服务费",required = true,co5TF = true)
+    @ExcelImport(value = "按整体费用和比例收取服务费",required = true,co5TF = true,kv = "0-否;1-是")
     private String chargeServiceFee;
     /**
      * 社保费用

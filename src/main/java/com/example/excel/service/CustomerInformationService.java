@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * C02
+ * C02 1表 客户成本往来设定表
  */
 @Service
 public class CustomerInformationService {

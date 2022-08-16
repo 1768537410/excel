@@ -6,6 +6,8 @@ import com.example.excel.mapper.ServiceagreementBasicinformationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * C05
  */
@@ -22,5 +24,22 @@ public class ServiceagreementBasicinformationService {
     public int insertServiceagreementBasicinformation(ServiceagreementBasicinformation serviceagreementBasicinformation){
         int rows = serviceagreementBasicinformationMapper.insertServiceagreementBasicinformation(serviceagreementBasicinformation);
         return rows;
+    }
+
+    /**
+     * 查询服务协议名称
+     * @return
+     */
+    public List<String> SelectserviceAgreementName(){
+        return serviceagreementBasicinformationMapper.SelectserviceAgreementName();
+    }
+
+    /**
+     * 根据 按整体费用和比例收取服务费 的是否 来查询 服务协议名
+     * @param chargeServiceFee
+     * @return
+     */
+    public List<String> SelectServiceAgreementNameByChargeServiceFee(String chargeServiceFee){
+        return serviceagreementBasicinformationMapper.SelectServiceAgreementNameByChargeServiceFee(chargeServiceFee);
     }
 }

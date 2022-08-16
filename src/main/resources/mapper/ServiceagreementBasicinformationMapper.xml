@@ -32,5 +32,11 @@
         #{chargingMethod}, #{serviceAgreementNumber}
         )
     </insert>
+    <select id="SelectserviceAgreementName" resultType="java.lang.String">
+        select serviceAgreement_name from serviceagreement_basicinformation
+    </select>
+    <select id="SelectServiceAgreementNameByChargeServiceFee" resultType="java.lang.String">
+        select serviceAgreement_name from serviceagreement_basicinformation where chargeService_fee = #{chargeServiceFee}
+    </select>
 </mapper>
 

@@ -21,37 +21,37 @@ public class ServiceAgreementItems {
     /**
      * 服务协议名称
      */
-    @ExcelImport("服务协议名称")
+    @ExcelImport(value = "服务协议名称",required = true,ListServiceAgreementNameBuilder = true)
     private String serviceAgreementName;
     /**
      * 服务产品
      */
-    @ExcelImport("服务产品")
+    @ExcelImport(value = "服务产品",serviceProducts = true)
     private String serviceProducts;
     /**
      * 服务项目
      */
-    @ExcelImport("服务项目")
+    @ExcelImport(value = "服务项目",serviceItems = true)
     private String serviceItems;
     /**
      * 服务套餐
      */
-    @ExcelImport("服务套餐")
+    @ExcelImport(value = "服务套餐",servicePackage = true)
     private String servicePackage;
     /**
      * 协议价（元）
      */
-    @ExcelImport("协议价（元）")
+    @ExcelImport(value = "协议价（元）",required = true,negotiatedPrice = true)
     private String negotiatedPrice;
     /**
      * 收费方式
      */
-    @ExcelImport("收费方式")
+    @ExcelImport(value = "收费方式",required = true,chargingMethod = true)
     private String chargingMethod;
     /**
      * 核算类型
      */
-    @ExcelImport("核算类型")
+    @ExcelImport(value = "核算类型",required = true)
     private String accountingType;
 
     /**

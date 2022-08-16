@@ -4,7 +4,7 @@ import com.example.excel.entity.CustomerInformation;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * C02 Mapper
+ * C02 1表 客户成本往来设定表 Mapper
  */
 @Mapper
 public interface CustomerInformationMapper {

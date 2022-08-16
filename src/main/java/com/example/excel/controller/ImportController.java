@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("import")
@@ -36,6 +33,15 @@ public class ImportController {
     @Autowired
     private ServiceagreementBasicinformationService serviceagreementBasicinformationService;
 
+    @Autowired
+    private ServiceAgreementItemsService serviceAgreementItemsService;
+
+    @Autowired
+    private CustomerContractBasicInformationService customerContractBasicInformationService;
+
+    @Autowired
+    private CustomerBillGenerationConditionsService customerBillGenerationConditionsService;
+
 
     /**
      * 导入解析为JSON
@@ -49,6 +55,27 @@ public class ImportController {
         JSONArray array = ExcelUtils.readMultipartFile(file);
         System.out.println("导入数据为:" + array);
         return array;
+    }
+
+    /**
+     * 多个sheet页导入
+     * @param file
+     * @throws Exception
+     */
+    @PostMapping("/upload")
+    @ResponseBody
+    public void upload(@RequestPart("file") MultipartFile file) throws Exception {
+        Map<String, JSONArray> map = ExcelUtils.readFileManySheet(file);
+        map.forEach((key, value) -> {
+            System.out.println("Sheet名称：" + key);
+            System.out.println("Sheet数据：" + value);
+            System.out.println("----------------------");
+        });
+        //C02
+        JSONArray jsonArray = map.get("客户成本往来设定表");
+        map.get("客户账单生成条件");
+        map.get("成本往来设定模板");
+        ExcelUtils.readMultipartFiles(jsonArray,CustomerInformation.class);
     }
 
     /**
@@ -87,8 +114,14 @@ public class ImportController {
     @PostMapping("/classC02")
     @ResponseBody
     public void importClassC02(@RequestPart("file")MultipartFile file) throws Exception {
+
+        Map<String, JSONArray> map = ExcelUtils.readFileManySheet(file);
+        JSONArray CustomerInformation = map.get("客户成本往来设定表");
+        JSONArray CustomerBillGenerationConditions =  map.get("客户账单生成条件");
+
+        System.out.println("客户成本往来设定表");
         //获取处理完Excel的数据
-        List<CustomerInformation> users = ExcelUtils.readMultipartFile(file, CustomerInformation.class);
+        List<CustomerInformation> users = ExcelUtils.readMultipartFiles(CustomerInformation,CustomerInformation.class);
         //创建一个集合来存放错误信息
         List<String> Customer = new ArrayList<>();
         //循环遍历向list中添加错误信息
@@ -102,14 +135,44 @@ public class ImportController {
             //循环遍历导入数据库
             for (CustomerInformation user : users) {
                 customerInformationService.insertCustomerInformation(user);
-                System.out.println(user.getRowNum() + "导入成功");
+                System.out.println("客户成本往来设定表" + user.getRowNum() + "导入成功");
             }
         }else {
             //循环遍历输出行数和错误信息
             for (CustomerInformation user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips());
+                System.out.println("客户成本往来设定表" + user.getRowNum() + user.getRowTips());
             }
         }
+        System.out.println("-----------------------------------------------------");
+        System.out.println("客户账单生成条件");
+        //获取处理完Excel的数据
+        List<CustomerBillGenerationConditions> CustomerBill = ExcelUtils.readMultipartFiles(CustomerBillGenerationConditions,CustomerBillGenerationConditions.class);
+        //创建一个集合来存放错误信息
+        List<String> CBGC = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (CustomerBillGenerationConditions user : CustomerBill) {
+            CBGC.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        CBGC.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (CBGC.isEmpty()){
+            //循环遍历导入数据库
+            for (CustomerBillGenerationConditions user : CustomerBill) {
+                customerBillGenerationConditionsService.insertCustomerBillGenerationConditions(user);
+                System.out.println("客户账单生成条件" + user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (CustomerBillGenerationConditions user : CustomerBill) {
+                System.out.println("客户账单生成条件" + user.getRowNum() + user.getRowTips());
+            }
+        }
+
+
+
+
+
     }
 
     @PostMapping("/classC03")
@@ -191,10 +254,70 @@ public class ImportController {
         }else {
             //循环遍历输出行数和错误信息
             for (ServiceagreementBasicinformation user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips());
+                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
             }
         }
     }
+
+
+    @PostMapping("/classC06")
+    @ResponseBody
+    public void importClassC06(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<ServiceAgreementItems> users = ExcelUtils.readMultipartFile(file, ServiceAgreementItems.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (ServiceAgreementItems user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (ServiceAgreementItems user : users) {
+                serviceAgreementItemsService.insertServiceAgreementItems(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (ServiceAgreementItems user : users) {
+                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+            }
+        }
+    }
+
+
+
+    @PostMapping("/classC07")
+    @ResponseBody
+    public void importClassC07(@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<CustomerContractBasicInformation> users = ExcelUtils.readMultipartFile(file, CustomerContractBasicInformation.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (CustomerContractBasicInformation user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (CustomerContractBasicInformation user : users) {
+//                customerContractBasicInformationService.insertCustomerContractBasicInformation(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            //循环遍历输出行数和错误信息
+            for (CustomerContractBasicInformation user : users) {
+                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+            }
+        }
+    }
+
 
 
 }

@@ -13,8 +13,10 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @SpringBootTest
 @Component
@@ -28,10 +30,10 @@ class ExcelApplicationTests {
 //    private CustomerInformationService customerInformationService;
 //    private static CustomerInformationService customerInformationServices;
 
-//    public ExcelApplicationTests(){}
+    //    public ExcelApplicationTests(){}
 //    public static ExcelApplicationTests excelApplicationTests;
     @PostConstruct
-    public void init(){
+    public void init() {
         basiInformationServices = basiInformationService;
         System.out.println("basiInformationService");
     }
@@ -39,13 +41,14 @@ class ExcelApplicationTests {
     @Test
     void contextLoads() {
     }
+
     @Test
-    public  boolean test(){
+    public boolean test() {
 
         return true;
     }
 
-        public static void main(String[] args) {
+    public static void main(String[] args) {
 //            // 创建一个 HashMap
 //            HashMap<Integer, String> sites = new HashMap<>();
 //
@@ -97,9 +100,53 @@ class ExcelApplicationTests {
 //            //5、验证 HH:mm:ss 格式的日期
 //            String hms = "12:36:89";
 //            System.out.println("hms: "+isLegalDate(hms.length(),hms,"HH:mm:ss"));
-            BasiInformation basiInformation = basiInformationServices.findBasiInformationByCustomerAbbreviation("长春市邮政局");
-            basiInformation.getCustomerName();
-            System.out.println(basiInformation.getCustomerName());
+
+//            BasiInformation basiInformation = basiInformationServices.findBasiInformationByCustomerAbbreviation("长春市邮政局");
+//            basiInformation.getCustomerName();
+//            System.out.println(basiInformation.getCustomerName());
+
+
+//        int i1 = 1;
+//        int i2 = 1;
+//        // true||true && false  执行
+//        if ((i1 == 1) || (i1 == 1) && (i2 == 2)) {
+//            System.out.println("||,&& 执行");
+//        }
+//        // true | true & false   执行
+//        if ((i1 == 1) | (i1 == 1) & (i2 == 2)) {
+//            System.out.println("|,&执行");
+//        }
+//        // true && false | true   执行
+//        if ((i1 == 1) && (i2 == 2) | (i1 == 1)) {
+//            System.out.println("&& |执行");
+//        }
+//        // true & false || true   执行
+//        if ((i1 == 1) & (i2 == 2) || (i1 == 1)) {
+//            System.out.println("& ||执行");
+//        }
+
+//        List<String> list = new ArrayList();
+//        list.add("按人月");
+//        list.add("按人年");
+//        list.add("按人次");
+//        //服务项目
+//        String Is = "薪资核算及发放";
+//        if (Is.equals("薪资核算") || Is.equals("薪资核算及发放")) {
+//            System.out.println("1");
+//            if (!list.contains("按人")){
+//                System.out.println(true);
+//            }
+//        }else {
+//            System.out.println(false);
+//
+//}
+        String SIZE = "薪资核算与发放";
+        if (SIZE.contains("薪资核算") || SIZE.contains("薪资核算与发放")){
+            System.out.println(true);
+        }else {
+            System.out.println(false);
+        }
+
 
         }
     /**

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * C01 Mapper
+ * @author user
  */
 @Mapper
 public interface BasiInformationMapper {
