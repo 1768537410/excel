@@ -6,12 +6,10 @@ import com.example.excel.service.*;
 import com.example.excel.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @Controller
@@ -42,6 +40,16 @@ public class ImportController {
     @Autowired
     private CustomerBillGenerationConditionsService customerBillGenerationConditionsService;
 
+    @Autowired
+    private PayrollInitializationService payrollInitializationService;
+
+    @Autowired
+    private CustomerFirstlevelService customerFirstlevelService;
+
+    @RequestMapping("/")
+    public String hello(){
+        return "excel";
+    }
 
     /**
      * 导入解析为JSON
@@ -79,13 +87,15 @@ public class ImportController {
     }
 
     /**
+     * BasiInformation
+     * com.example.excel.entity.BasiInformation
      * 解析为对象
      * @param file
      * @throws Exception
      */
     @PostMapping("/classC01")
     @ResponseBody
-    public void importClassC01(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC01(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<BasiInformation> users = ExcelUtils.readMultipartFile(file,BasiInformation.class);
         //创建一个集合来存放错误信息
@@ -104,20 +114,28 @@ public class ImportController {
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+                // 导出数据
+                ExcelUtils.export(response,"C01错误提示", users ,BasiInformation.class);
+            //循环遍历导入数据库
             for (BasiInformation user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips() );
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
 
+    /**
+     * CustomerInformation
+     * com.example.excel.entity.CustomerInformation
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC02")
     @ResponseBody
-    public void importClassC02(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC02(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
 
         Map<String, JSONArray> map = ExcelUtils.readFileManySheet(file);
         JSONArray CustomerInformation = map.get("客户成本往来设定表");
-        JSONArray CustomerBillGenerationConditions =  map.get("客户账单生成条件");
 
         System.out.println("客户成本往来设定表");
         //获取处理完Excel的数据
@@ -138,12 +156,28 @@ public class ImportController {
                 System.out.println("客户成本往来设定表" + user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C02 客户成本往来设定表 错误提示", users ,CustomerInformation.class);
             for (CustomerInformation user : users) {
-                System.out.println("客户成本往来设定表" + user.getRowNum() + user.getRowTips());
+                System.out.println(user.getRowTips() + "导入失败");
             }
         }
-        System.out.println("-----------------------------------------------------");
+    }
+
+    /**
+     * CustomerBillGenerationConditions
+     * com.example.excel.entity.CustomerBillGenerationConditions
+     * @param response
+     * @param file
+     * @throws Exception
+     */
+    @PostMapping("/classC0202")
+    @ResponseBody
+    public void importClassC0202(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
+
+        Map<String, JSONArray> map = ExcelUtils.readFileManySheet(file);
+        JSONArray CustomerBillGenerationConditions =  map.get("客户账单生成条件");
+
         System.out.println("客户账单生成条件");
         //获取处理完Excel的数据
         List<CustomerBillGenerationConditions> CustomerBill = ExcelUtils.readMultipartFiles(CustomerBillGenerationConditions,CustomerBillGenerationConditions.class);
@@ -163,21 +197,24 @@ public class ImportController {
                 System.out.println("客户账单生成条件" + user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C02 客户账单生成条件 错误提示", CustomerBill ,CustomerBillGenerationConditions.class);
             for (CustomerBillGenerationConditions user : CustomerBill) {
-                System.out.println("客户账单生成条件" + user.getRowNum() + user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
-
-
-
-
-
     }
 
+    /**
+     * CustomerSettlementUnit
+     * com.example.excel.entity.CustomerSettlementUnit
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC03")
     @ResponseBody
-    public void importClassC03(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC03(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<CustomerSettlementUnit> users = ExcelUtils.readMultipartFile(file, CustomerSettlementUnit.class);
         //创建一个集合来存放错误信息
@@ -196,16 +233,24 @@ public class ImportController {
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C03错误提示.xlsx", users ,CustomerSettlementUnit.class);
             for (CustomerSettlementUnit user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips());
+                System.out.println(user.getRowTips() + "导入失败");
             }
         }
     }
 
+    /**
+     * SubCustomerInformation
+     * com.example.excel.entity.SubCustomerInformation
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC04")
     @ResponseBody
-    public void importClassC04(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC04(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<SubCustomerInformation> users = ExcelUtils.readMultipartFile(file, SubCustomerInformation.class);
         //创建一个集合来存放错误信息
@@ -224,16 +269,24 @@ public class ImportController {
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C04错误提示", users ,SubCustomerInformation.class);
             for (SubCustomerInformation user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
 
+    /**
+     * ServiceagreementBasicinformation
+     * com.example.excel.entity.ServiceagreementBasicinformation
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC05")
     @ResponseBody
-    public void importClassC05(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC05(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<ServiceagreementBasicinformation> users = ExcelUtils.readMultipartFile(file, ServiceagreementBasicinformation.class);
         //创建一个集合来存放错误信息
@@ -252,16 +305,24 @@ public class ImportController {
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C05错误提示", users ,ServiceagreementBasicinformation.class);
             for (ServiceagreementBasicinformation user : users) {
-                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
 
+    /**
+     * ServiceAgreementItems
+     * com.example.excel.entity.ServiceAgreementItems
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC06")
     @ResponseBody
-    public void importClassC06(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC06(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<ServiceAgreementItems> users = ExcelUtils.readMultipartFile(file, ServiceAgreementItems.class);
         //创建一个集合来存放错误信息
@@ -280,16 +341,24 @@ public class ImportController {
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C06错误提示", users ,ServiceAgreementItems.class);
             for (ServiceAgreementItems user : users) {
-                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
 
+    /**
+     * CustomerContractBasicInformation
+     * com.example.excel.entity.CustomerContractBasicInformation
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC07")
     @ResponseBody
-    public void importClassC07(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC07(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<CustomerContractBasicInformation> users = ExcelUtils.readMultipartFile(file, CustomerContractBasicInformation.class);
         //创建一个集合来存放错误信息
@@ -304,21 +373,28 @@ public class ImportController {
         if (Customer.isEmpty()){
             //循环遍历导入数据库
             for (CustomerContractBasicInformation user : users) {
-//                customerContractBasicInformationService.insertCustomerContractBasicInformation(user);
+                customerContractBasicInformationService.insertCustomerContractBasicInformation(user);
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C07错误提示", users ,CustomerContractBasicInformation.class);
             for (CustomerContractBasicInformation user : users) {
-                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
 
-
+    /**
+     * CustomerFirstlevel
+     * com.example.excel.entity.CustomerFirstlevel
+     * @param response
+     * @param file
+     * @throws Exception
+     */
     @PostMapping("/classC08")
     @ResponseBody
-    public void importClassC08(@RequestPart("file")MultipartFile file) throws Exception {
+    public void importClassC08(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<CustomerFirstlevel> users = ExcelUtils.readMultipartFile(file, CustomerFirstlevel.class);
         //创建一个集合来存放错误信息
@@ -333,15 +409,56 @@ public class ImportController {
         if (Customer.isEmpty()){
             //循环遍历导入数据库
             for (CustomerFirstlevel user : users) {
+                customerFirstlevelService.insertCustomerFirstlevel(user);
                 System.out.println(user.getRowNum() + "导入成功");
             }
         }else {
-            //循环遍历输出行数和错误信息
+            // 导出数据
+            ExcelUtils.export(response,"C08错误提示", users ,CustomerFirstlevel.class);
             for (CustomerFirstlevel user : users) {
-                System.out.println("第" + user.getRowNum() +"行："+ user.getRowTips());
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
             }
         }
     }
+
+    /**
+     * PayrollInitialization
+     * com.example.excel.entity.PayrollInitialization
+     * @param response
+     * @param file
+     * @throws Exception
+     */
+    @PostMapping("/classC016")
+    @ResponseBody
+    public void importClassC016(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
+        //获取处理完Excel的数据
+        List<PayrollInitialization> users = ExcelUtils.readMultipartFile(file, PayrollInitialization.class);
+        //创建一个集合来存放错误信息
+        List<String> Customer = new ArrayList<>();
+        //循环遍历向list中添加错误信息
+        for (PayrollInitialization user : users) {
+            Customer.add(user.getRowTips());
+        }
+        //移除list中所用空的信息
+        Customer.removeAll(Collections.singleton(""));
+        //如果list为空
+        if (Customer.isEmpty()){
+            //循环遍历导入数据库
+            for (PayrollInitialization user : users) {
+                payrollInitializationService.insertPayrollInitialization(user);
+                System.out.println(user.getRowNum() + "导入成功");
+            }
+        }else {
+            // 导出数据
+            ExcelUtils.export(response,"C016错误提示", users ,PayrollInitialization.class);
+            for (PayrollInitialization user : users) {
+                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
+            }
+        }
+    }
+
+
+
 
 
 

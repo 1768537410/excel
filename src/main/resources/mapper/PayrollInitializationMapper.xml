@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.excel.mapper.PayrollInitializationMapper">
+
+
+    <sql id="insertPayrollInitializations">
+        `name`,certificate_type, id_number,
+        month_tax,income_item, employment_type,
+        cumulativeAmountTotal_payable,accumulatedAmountOther_tax, cumulativeAmount_income,
+        accumulatedAmount_taxFreeIncome,cumulativeAmount_charges,cumulativeAmount_deductions,
+        cumulativeAmount_special,accumulatedAmountOther_deductions,accumulatedAfterAmount_tax,
+        debitAmount,accumulatedTaxableAmount_income,accumulatedTaxAmount_payable,
+        cumulativeTaxAmount_deduction,accumulatedTaxAmount_paid,cumulativePaidAmount_wages,
+        accumulatedBankAmount_salary,accumulatedPersonalAmount_debt,cumulativeChildrenAmount_education,
+        accumulatedMortgageAmount_interest,cumulativeHousingAmount_rent,cumulativeSupportAmount_elderly,
+        cumulativeAmount_continuingEducation,specialAdditionalAmount_deduction,cumulativeTotal_payable,
+        accumulatedOther_tax,cumulative_income,accumulatedTaxFree_income,
+        cumulative_charges,cumulative_deductions,cumulativeSpecial_deduction,
+        accumulatedOther_deductions,accumulatedAfterTax_deductions,customerRequests_deduction,
+        accumulatedTaxable_income,accumulatedTax_payable,cumulativeTax_deduction,
+        accumulatedTax_withholding,accumulatedTax_paid,cumulativePaid_wages,
+        accumulatedBank_salary,accumulatedPersonal_debt,month_salary,
+        customer_abbreviation,subCustomer_abbreviation,taxReturn_name,
+        taxCompany_name,customerSalary_template,ax_name,
+        taxDocument_type,taxLicense_number,employment_situation
+    </sql>
+
+
+    <insert id="insertPayrollInitialization" keyProperty="id">
+        insert into payroll_initialization (<include refid="insertPayrollInitializations"></include>)
+        values(
+        #{name}, #{certificateType}, #{idNumber},
+        #{monthTax}, #{incomeItem}, #{employmentType},
+        #{cumulativeAmountTotalPayable}, #{accumulatedAmountOtherTax},#{cumulativeAmountIncome},
+        #{accumulatedAmountTaxFreeIncome}, #{cumulativeAmountCharges},#{cumulativeAmountDeductions},
+        #{cumulativeAmountSpecial}, #{accumulatedAmountOtherDeductions},#{accumulatedAfterAmountTax},
+        #{debitAmount},#{accumulatedTaxableAmountIncome},#{accumulatedTaxAmountPayable},
+        #{cumulativeTaxAmountDeduction},#{accumulatedTaxAmountPaid},#{cumulativePaidAmountWages},
+        #{accumulatedBankAmountSalary},#{accumulatedPersonalAmountDebt}, #{cumulativeChildrenAmountEducation},
+        #{accumulatedMortgageAmountInterest},#{cumulativeHousingAmountRent}, #{cumulativeSupportAmountElderly},
+        #{cumulativeAmountContinuingEducation},#{specialAdditionalAmountDeduction},#{cumulativeTotalPayable},
+        #{accumulatedOtherTax},#{cumulativeIncome}, #{accumulatedTaxFreeIncome},
+        #{cumulativeCharges},#{cumulativeDeductions}, #{cumulativeSpecialDeduction},
+        #{accumulatedOtherDeductions},#{accumulatedAfterTaxDeductions},#{customerRequestsDeduction},
+        #{accumulatedTaxableIncome},#{accumulatedTaxPayable}, #{cumulativeTaxDeduction},
+        #{accumulatedTaxWithholding},#{accumulatedTaxPaid},#{cumulativePaidWages},
+        #{accumulatedBankSalary},#{accumulatedPersonalDebt},#{monthSalary},
+        #{customerAbbreviation},#{subCustomerAbbreviation},#{taxReturnName},
+        #{taxCompanyName},#{customerSalaryTemplate},#{axName},
+        #{taxDocumentType},#{taxLicenseNumber}, #{employmentSituation}
+        )
+    </insert>
+
+</mapper>

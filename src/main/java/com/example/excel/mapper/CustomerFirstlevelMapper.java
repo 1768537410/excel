@@ -1,8 +1,12 @@
 package com.example.excel.mapper;
 
+import com.example.excel.entity.BasiInformation;
 import com.example.excel.entity.CustomerContractBasicInformation;
 import com.example.excel.entity.CustomerFirstlevel;
+import jdk.internal.dynalink.linker.LinkerServices;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * C08
@@ -16,4 +20,12 @@ public interface CustomerFirstlevelMapper {
      * @return
      */
     int insertCustomerFirstlevel(CustomerFirstlevel customerFirstlevel);
+
+    /**
+     * C07 和同名 查询 C08 协议名
+     * @param contractTitle
+     * @return
+     */
+    List<String> selectserviceAgreementNameBycontractTitle(String contractTitle);
+
 }

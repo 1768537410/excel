@@ -12,7 +12,7 @@
         termination_method,end_date,lastFee_collectionTime,
         reason_termination,number_signings,number_copiesSigned,
         former_contractName,contractExpiration_reminderDays,monthlyBill_generationTime,
-        monthlyBill_generationTime,payday,agreedPaymentDate,
+        annualBill_generationTime,payday,agreedPaymentDate,
         agreedPaymentMonthAndDay,account,depositaryBank,
         bankAccountName,returnTerms,workLnjuryClause,
         retirementClause,driverTerms,occupationalDiseaseClause,
@@ -48,4 +48,7 @@
         #{contractNumber}, #{reminderNotReceipt}
         )
     </insert>
+    <select id="selectCustomerContractBasicInformationBycontractLevel" resultType="java.lang.String">
+        SELECT contract_title from customercontract_basicinformation where contract_level = #{contractLevel}
+    </select>
 </mapper>

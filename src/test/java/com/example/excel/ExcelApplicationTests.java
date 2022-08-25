@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 @Component
@@ -48,7 +47,7 @@ class ExcelApplicationTests {
         return true;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //            // 创建一个 HashMap
 //            HashMap<Integer, String> sites = new HashMap<>();
 //
@@ -126,9 +125,13 @@ class ExcelApplicationTests {
 //        }
 
 //        List<String> list = new ArrayList();
-//        list.add("按人月");
-//        list.add("按人年");
-//        list.add("按人次");
+//        list.add("首签");
+//        list.add("新签");
+//        list.add("续签");
+//        if (list.contains("签") || list.contains("首")){
+//                System.out.println("没新签首签");
+//
+//        }
 //        //服务项目
 //        String Is = "薪资核算及发放";
 //        if (Is.equals("薪资核算") || Is.equals("薪资核算及发放")) {
@@ -140,15 +143,71 @@ class ExcelApplicationTests {
 //            System.out.println(false);
 //
 //}
-        String SIZE = "薪资核算与发放";
-        if (SIZE.contains("薪资核算") || SIZE.contains("薪资核算与发放")){
-            System.out.println(true);
-        }else {
-            System.out.println(false);
-        }
+
+//        String SIZE = "薪资核算与发放";
+//        if (SIZE.contains("薪资核算") || SIZE.contains("薪资核算与发放")){
+//            System.out.println(true);
+//        }else {
+//            System.out.println(false);
+//        }
 
 
+//        String val = "1231241.12";
+//        String[] Split = val.split("\\.");
+//        System.out.println("Split长度:" + Split.length);
+////        System.out.println(Split[1]);
+//        int num = 0;
+//        if (Split.length > 1 && !Split[1].isEmpty()) {
+//            for (int i = 0; i < Split[1].length(); i++) {
+//                num++;
+//            }
+//            System.out.println("num : " + num);
+//            if (num > 2) {
+//                System.out.println("不对");
+//            }
+//        }
+//        long time = System.currentTimeMillis();//获取当前时间精确到毫秒级的时间戳，例：1525849325942
+//        System.out.println(System.currentTimeMillis());
+//        System.out.println(timeStamp2Date("39813"));
+
+//        SimpleDateFormat sdf =  new SimpleDateFormat("yyyy-MM-dd");
+//        String time = "2008-12-31";
+//        Date date = null;
+//        try {
+//            date = sdf.parse(time);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        long time1 = date.getTime();
+//        System.out.println("时间戳格式："+time1);
+//        //输出：时间戳格式：1602384121000
+
+
+        //设置时间格式，将该时间格式的时间转换为时间戳
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = simpleDateFormat.parse("39813");
+        long time = date.getTime();
+         String res = String.valueOf(time);
+        System.out.println(res);
         }
+
+    public static String dateToStamp(String s) throws Exception {
+        String res;
+        //设置时间格式，将该时间格式的时间转换为时间戳
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = simpleDateFormat.parse(s);
+        long time = date.getTime();
+        res = String.valueOf(time);
+        return res;
+
+    }
+
+
+
+
+
+
+
     /**
      * 根据时间 和时间格式 校验是否正确
      * @param length 校验的长度
@@ -168,5 +227,11 @@ class ExcelApplicationTests {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static String timeStamp2Date(String time) {
+        Long timeLong = Long.parseLong(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//要转换的时间格式
+        return sdf.format(timeLong);
     }
 }

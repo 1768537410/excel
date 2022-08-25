@@ -19,5 +19,11 @@
                #{accountingType}
                )
     </insert>
+    <select id="selectchargingMethodByserviceAgreementName" resultType="java.lang.String">
+        select chargingMethod from serviceagreement_items where serviceAgreement_name = #{serviceAgreementName}
+    </select>
+    <select id="selectServiceAgreementNameByServiceItems" resultType="java.lang.String">
+        select serviceAgreement_name from serviceagreement_items where serviceItems = #{serviceItems}
+    </select>
 
 </mapper>

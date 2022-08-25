@@ -31,10 +31,10 @@ public @interface ExcelImport {
     boolean required() default false;
 
     /**
-     * 最大长度（默认255）
+     * 最大长度（默认1000）
      * @return
      */
-    int maxLength() default 255;
+    int maxLength() default 1000;
 
     /**
      * 导入唯一性验证（多个字段则取联合验证）
@@ -167,6 +167,30 @@ public @interface ExcelImport {
     boolean firstContractName() default false;
 
     /**
+     * 获取C07 客户简称
+     * @return
+     */
+    boolean c07customerAbbreviation() default false;
+
+    /**
+     * 获取C07 签订类型
+     * @return
+     */
+    boolean signType() default false;
+
+    /**
+     * 获取C07 合同类型
+     * @return
+     */
+    boolean contractType() default false;
+
+    /**
+     * 获取C07 前合同名称
+     * @return
+     */
+    boolean formerContractName() default false;
+
+    /**
      * C07 当合同状态为“已失效”时，终止方式、终止日期、末次费用收取时间、终止原因，必填
      * @return
      */
@@ -177,6 +201,38 @@ public @interface ExcelImport {
      * @return
      */
     boolean c07required() default false;
+
+    /**
+     * 年账单生成时间,当合同绑定的服务协议中有按人年收费的服务项目时，此项必填
+     */
+    boolean C07BGTime() default false;
+
+    /**
+     * 工资发放日当合同绑定的服务协议中有薪资相关的服务项目时，工资发放日必填
+     * @return
+     */
+    boolean C07payday() default false;
+
+    //C08
+
+    /**
+     * C08合同名称与C-07中填写的一级合同/协议名称保持一致；
+     * @return
+     */
+    boolean C08contractTitle() default false;
+
+    /**
+     * C08服务协议名称与C-05中填写的服务协议名称保持一致；
+     */
+    boolean C08serviceAgreementName() default false;
+    //C016
+
+    /**
+     * 必填项 如数值存在多位小数位数，保留两位
+     * @return
+     */
+    boolean c016required() default false;
+
 
 
 

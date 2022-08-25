@@ -43,7 +43,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 @Component
 public class ExcelUtils {
-
+    /**
+     * C01
+     */
     private static BasiInformationService basiInformationService;
 
     @Autowired
@@ -51,6 +53,9 @@ public class ExcelUtils {
         ExcelUtils.basiInformationService = basiInformationService;
     }
 
+    /**
+     * C04
+     */
     private static SubCustomerInformationService subCustomerInformationService;
 
     @Autowired
@@ -58,6 +63,9 @@ public class ExcelUtils {
         ExcelUtils.subCustomerInformationService = subCustomerInformationService;
     }
 
+    /**
+     * C05
+     */
     private static ServiceagreementBasicinformationService serviceagreementBasicinformationService;
 
     @Autowired
@@ -65,6 +73,9 @@ public class ExcelUtils {
         ExcelUtils.serviceagreementBasicinformationService = serviceagreementBasicinformationService;
     }
 
+    /**
+     * C02 2表
+     */
     private static CustomerBillGenerationConditionsService customerBillGenerationConditionsService;
 
     @Autowired
@@ -72,6 +83,35 @@ public class ExcelUtils {
         ExcelUtils.customerBillGenerationConditionsService = customerBillGenerationConditionsService;
     }
 
+    /**
+     * C07
+     */
+    private static CustomerContractBasicInformationService customerContractBasicInformationService;
+
+    @Autowired
+    public void setCustomerContractBasicInformationService(CustomerContractBasicInformationService customerContractBasicInformationService){
+        ExcelUtils.customerContractBasicInformationService = customerContractBasicInformationService;
+    }
+
+    /**
+     * C06
+     */
+    private static ServiceAgreementItemsService serviceAgreementItemsService;
+
+    @Autowired
+    public void  setServiceAgreementItemsService(ServiceAgreementItemsService serviceAgreementItemsService){
+        ExcelUtils.serviceAgreementItemsService = serviceAgreementItemsService;
+    }
+
+    /**
+     * c08
+     */
+    private static CustomerFirstlevelService customerFirstlevelService;
+
+    @Autowired
+    public void setCustomerFirstlevelService(CustomerFirstlevelService customerFirstlevelService){
+        ExcelUtils.customerFirstlevelService = customerFirstlevelService;
+    }
 
     private static final String XLSX = ".xlsx";
     private static final String XLS = ".xls";
@@ -97,7 +137,11 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> readMultipartFile(MultipartFile mFile, Class<T> clazz) throws Exception {
-        JSONArray array = readMultipartFile(mFile);
+        // C01: com.example.excel.entity.BasiInformation
+        String entity = clazz.getName();
+//        JSONArray array = readMultipartFile(mFile);
+        JSONArray array = readMultipartFile(mFile,entity);
+//        System.out.println(array);
         return getBeanList(array, clazz);
     }
     public static <T> List<T> readMultipartFiles(JSONArray array, Class<T> clazz) throws Exception {
@@ -110,6 +154,10 @@ public class ExcelUtils {
 
     public static JSONArray readMultipartFile(MultipartFile mFile) throws Exception {
         return readExcel(mFile, null);
+    }
+
+    public static JSONArray readMultipartFile(MultipartFile mFile , String entity) throws Exception {
+        return readExcel(mFile, null,entity);
     }
 
     public static Map<String, JSONArray> readFileManySheet(File file) throws Exception {
@@ -128,10 +176,19 @@ public class ExcelUtils {
         MultiValuedMap<String, String> ServiceAgreementNameMap = new ArrayListValuedHashMap<>(16);
         //获取 C06服务协议名称 对应的 服务项目
         MultiValuedMap<String, String> ServiceItemsMap = new ArrayListValuedHashMap<>(16);
-        //根据C07 合同/协议级别 存取 合同名称
+        //C07 根据合同/协议级别 存取 合同名称
         MultiValuedMap<String, String> contractLevelTitleMap = new ArrayListValuedHashMap<>(16);
+        //C07 根据客户简称 存取 签订类型
+        MultiValuedMap<String, String> CABySTMap = new ArrayListValuedHashMap<>(16);
+        //C07 根据合同类型 存取 签订类型
+        MultiValuedMap<String, String> CTBySTMap = new ArrayListValuedHashMap<>(16);
+
         for (int i = 0; i < array.size(); i++) {
-            list.add(getBean(clazz, array.getJSONObject(i), uniqueMap , ServiceAgreementNameMap , ServiceItemsMap, contractLevelTitleMap));
+//             System.out.println(array.getJSONObject(1));
+            list.add(
+                    getBean(clazz, array.getJSONObject(i), uniqueMap , ServiceAgreementNameMap ,
+                    ServiceItemsMap, contractLevelTitleMap,CABySTMap,CTBySTMap)
+            );
         }
         return list;
     }
@@ -142,7 +199,9 @@ public class ExcelUtils {
     private static <T> T getBean(Class<T> c, JSONObject obj, MultiValuedMap<Integer,
             String> uniqueMap ,MultiValuedMap<String, String> ServiceAgreementNameMap ,
                                  MultiValuedMap<String, String> ServiceItemsMap,
-                                 MultiValuedMap<String, String> contractLevelTitleMap) throws Exception {
+                                 MultiValuedMap<String, String> contractLevelTitleMap,
+                                 MultiValuedMap<String, String> CABySTMap,
+                                 MultiValuedMap<String, String> CTBySTMap) throws Exception {
         T t = c.newInstance();
         Field[] fields = c.getDeclaredFields();
         List<String> errMsgList = new ArrayList<>();
@@ -169,13 +228,20 @@ public class ExcelUtils {
         StringBuilder contractLevelBuilder = new StringBuilder();
         //存放 C07 一级合同名称
         StringBuilder firstContractNameBuilder = new StringBuilder();
-
-
+        //存放 C07 签订类型
+        StringBuilder signTypeBuilder = new StringBuilder();
+        //存放 C07 客户简称
+        StringBuilder customerAbbreviationBuilder = new StringBuilder();
+        //存放 C07 合同类型
+        StringBuilder contractTypeBuilder = new StringBuilder();
+        //必填
         List uniqueList = new ArrayList();
-
-
-        //用于判断C05中的是否
+        //用于判断C05中的是否  C07 合同状态
         List Yes = new ArrayList();
+        //用于c07  签订类型为“续签”时，前合同名称必填
+        List xuqian = new ArrayList();
+        //存放C06 收费方式
+        List<String> shoufei = new ArrayList();
 
         int rowNum = 0;
         for (Field field : fields) {
@@ -201,7 +267,8 @@ public class ExcelUtils {
             setFieldValue(t, field, obj, uniqueBuilder, errMsgList,Yes,
                     setServiceAgreementName,setserviceItems,ServiceAgreementNameBuilder,
                     negotiatedPriceBuilder,serviceItemsBuilder,contractTitleBuilder,
-                    contractLevelBuilder,firstContractNameBuilder);
+                    contractLevelBuilder,firstContractNameBuilder,signTypeBuilder,
+                    customerAbbreviationBuilder,contractTypeBuilder,xuqian,shoufei);
         }
 
         //处理一列服务协议名称
@@ -239,11 +306,11 @@ public class ExcelUtils {
 
             List<String> serviceAgreementName = serviceagreementBasicinformationService.SelectServiceAgreementNameByChargeServiceFee("0");
 
-            List<Integer> SizesOf = new ArrayList<>();
+            List<Double> SizesOf = new ArrayList<>();
             for (String SA : serviceAgreementName){
                List<String> values = (List<String>) ServiceAgreementNameMap.get(SA);
                 for (String SIZE : values){
-                    int size = Integer.parseInt(SIZE);
+                    Double size = Double.parseDouble(SIZE);
                     if (size > 0){
                         SizesOf.add(size);
                     }
@@ -275,7 +342,6 @@ public class ExcelUtils {
                 ServiceItemsMap.put(SP,NP);
             }
 
-
             List<String> SizesOf = new ArrayList<>();
             for (String SA : collect1){
                 List<String> values = (List<String>) ServiceItemsMap.get(SA);
@@ -288,7 +354,6 @@ public class ExcelUtils {
             if (SizesOf.size() > 1){
                 errMsgList.add(String.format("C-06的“服务项目“注意“薪资核算”和“薪资核算与发放”只能选择一个"));
             }
-
 
         }
 
@@ -318,6 +383,65 @@ public class ExcelUtils {
             }
         }
 
+        //C07 "1.同一客户必须存在且只能存在一条“首签”客户合同；
+        if (customerAbbreviationBuilder.length() > 0 && signTypeBuilder.length() > 0){
+            //C07 客户简称
+            String customerAbbreviation = customerAbbreviationBuilder.toString();
+            String[] Split = customerAbbreviation.split(",");
+            List<String> CAs = Arrays.stream(Split).collect(Collectors.toList());
+
+            //C07 签订类型
+            String signType = signTypeBuilder.toString();
+            String[] Split1 = signType.split(",");
+            List<String> STs = Arrays.stream(Split1).collect(Collectors.toList());
+
+            for (int i = 0; i < CAs.size(); i++){
+                String CA = CAs.get(i);
+                String ST = STs.get(i);
+                CABySTMap.put(CA,ST);
+            }
+            List<String> SizesOf = new ArrayList<>();
+            for (String SA : CAs){
+                List<String> values = (List<String>) CABySTMap.get(SA);
+                for (String SIZE : values){
+                    if (SIZE.contains("首签")){
+                        SizesOf.add(SIZE);
+                    }
+                }
+            }
+            if (SizesOf.size() > 1){
+                errMsgList.add(String.format("C07同一客户只能存在一条“首签”客户合同"));
+            }
+            if(SizesOf.size() == 0){
+                errMsgList.add(String.format("C07同一客户必须存在且一条“首签”客户合同"));
+            }
+
+        }
+
+        //C07 当“签订类型”为续签时，必须存在相同合同类型的“首签”或“新签”合同"
+        if (contractTypeBuilder.length() > 0 && signTypeBuilder.length() > 0){
+            //C07 合同类型
+            String contractType = contractTypeBuilder.toString();
+            String[] Split = contractType.split(",");
+            List<String> CTs = Arrays.stream(Split).collect(Collectors.toList());
+            //C07 签订类型
+            String signType = signTypeBuilder.toString();
+            String[] Split1 = signType.split(",");
+            List<String> STs = Arrays.stream(Split1).collect(Collectors.toList());
+            for (int i = 0; i < CTs.size(); i++){
+                String CT = CTs.get(i);
+                String ST = STs.get(i);
+                CTBySTMap.put(CT,ST);
+            }
+            List<String> SizesOf = new ArrayList<>();
+            for (String SA : CTs){
+                List<String> values = (List<String>) CTBySTMap.get(SA);
+                if (values.contains("续签") && !values.contains("新签") && !values.contains("首签")){
+                    errMsgList.add(String.format("当“签订类型”为续签时，必须存在相同合同类型的“首签”或“新签”合同"));
+
+                }
+            }
+        }
 
 
 
@@ -372,7 +496,9 @@ public class ExcelUtils {
                                           Set<String> setserviceItems,StringBuilder ServiceAgreementNameBuilder,
                                           StringBuilder negotiatedPriceBuilder,StringBuilder serviceItemsBuilder,
                                           StringBuilder contractTitleBuilder, StringBuilder contractLevelBuilder,
-                                          StringBuilder firstContractNameBuilder) {
+                                          StringBuilder firstContractNameBuilder,StringBuilder signTypeBuilder,
+                                          StringBuilder customerAbbreviationBuilder, StringBuilder contractTypeBuilder,
+                                          List xuqian,List<String> shoufei) {
 
         // 获取 ExcelImport 注解属性
         ExcelImport annotation = field.getAnnotation(ExcelImport.class);
@@ -457,6 +583,7 @@ public class ExcelUtils {
         //判断日期格式是否规范 2019-08-23
         boolean dateTime = annotation.dateTime();
         if (dateTime){
+            //39813
             if (val != null && val.length() != 0){
                 if (!isLegalDate(val.length(),val,"yyyy-MM-dd")){
                     errMsgList.add(String.format("[%s]日期格式不规范 eg:2019-08-23", cname));
@@ -663,6 +790,37 @@ public class ExcelUtils {
                 firstContractNameBuilder.append(val);
             }
         }
+
+        //获取C07 客户简称
+        Boolean c07customerAbbreviation = annotation.c07customerAbbreviation();
+        if (c07customerAbbreviation){
+            if (customerAbbreviationBuilder.length() > 0) {
+                customerAbbreviationBuilder.append(",").append(val);
+            } else {
+                customerAbbreviationBuilder.append(val);
+            }
+        }
+
+        //获取C07 签订类型
+        Boolean signType = annotation.signType();
+        if (signType){
+            if (signTypeBuilder.length() > 0) {
+                signTypeBuilder.append(",").append(val);
+            } else {
+                signTypeBuilder.append(val);
+            }
+        }
+
+        //获取C07 合同类型
+        Boolean contractType = annotation.contractType();
+        if (contractType){
+            if (contractTypeBuilder.length() > 0) {
+                contractTypeBuilder.append(",").append(val);
+            } else {
+                contractTypeBuilder.append(val);
+            }
+        }
+
         // C07 当合同状态为“已失效”时，终止方式、终止日期、末次费用收取时间、终止原因，必填
         boolean co7TF = annotation.co7TF();
         if (co7TF && "已失效".equals(val)){
@@ -672,15 +830,100 @@ public class ExcelUtils {
         if (c07required  && val.isEmpty() && null != Yes && Yes.size() != 0){
             errMsgList.add(String.format("当合同状态为“已失效”时[%s]不能为空", cname));
         }
-        //当合同的签订类型为“续签”时，前合同名称必填
-
-
-
+        //当合同的签订类型为“续签”时，前合同名称必填  xuqian
+        boolean formerContractName = annotation.formerContractName();
+        if (signType && "续签".equals(val)){
+            xuqian.add(2);
+        }
+        if (formerContractName && val.isEmpty() && null != xuqian && xuqian.size() != 0){
+            errMsgList.add(String.format("当合同的签订类型为“续签”时[%s]必填", cname));
+        }
         // C-07中账单生成条件必须与C-02 2表一致
         boolean billGenerationConditionName = annotation.billGenerationConditionName();
         if (billGenerationConditionName && !"".equals(val) && customerBillGenerationConditionsService.findCustomerAbbreviationByBillGenerationConditionName(val) ==null){
             errMsgList.add(String.format("[%s]必须与C-02 2表一致", cname));
         }
+        //年账单生成时间,当合同绑定的服务协议中有按人年收费的服务项目时，此项必填
+        boolean C07BGTime = annotation.C07BGTime();
+        if (C07BGTime){
+            //C07 合同名
+           String cTitle = contractTitleBuilder.toString();
+           //C08 协议名
+           List<String> sAName = customerFirstlevelService.selectserviceAgreementNameBycontractTitle(cTitle);
+           for (String SAN : sAName){
+               //C06 收费方式
+               List<String> SAISs = serviceAgreementItemsService.selectchargingMethodByserviceAgreementName(SAN);
+               for (String SAIS : SAISs){
+                   shoufei.add(SAIS);
+               }
+
+           }
+            if (shoufei.contains("按人年") && val.isEmpty()){
+                errMsgList.add(String.format("年账单生成时间,当合同绑定的服务协议中有按人年收费的服务项目时[%s]必填", cname));
+            }
+        }
+        //工资发放日当合同绑定的服务协议中有薪资相关的服务项目时，工资发放日必填
+        boolean C07payday = annotation.C07payday();
+        if(C07payday){
+            //C07 合同名
+            String cTitle = contractTitleBuilder.toString();
+            //C08 协议名
+            List<String> sAName = customerFirstlevelService.selectserviceAgreementNameBycontractTitle(cTitle);
+            //根据 薪资核算及发放  薪资核算 来查询C06中的协议名
+            List<String> XZHSJFF = serviceAgreementItemsService.selectServiceAgreementNameByServiceItems("薪资核算及发放");
+            List<String> XZHS = serviceAgreementItemsService.selectServiceAgreementNameByServiceItems("薪资核算");
+            for (String SAN : sAName){
+               if (XZHSJFF.contains(SAN) || XZHS.contains(SAN)){
+                   errMsgList.add(String.format("当合同绑定的服务协议中有薪资相关的服务项目时,[%s]必填", cname));
+               }
+            }
+
+        }
+
+        /**
+         * C08
+         */
+
+        //C08合同名称与C-07中填写的一级合同/协议名称保持一致；
+//        boolean C08contractTitle = annotation.C08contractTitle();
+//        if (C08contractTitle){
+//            List<String> C07contractTitle = customerContractBasicInformationService.selectCustomerContractBasicInformationBycontractLevel("一级");
+//            if (!C07contractTitle.contains(val)){
+//                errMsgList.add(String.format("C08[%s]必须与C-07中填写的一级合同/协议名称保持一致", cname));
+//            }
+//        }
+        //C08服务协议名称与C-05中填写的服务协议名称保持一致；
+        boolean C08serviceAgreementName = annotation.C08serviceAgreementName();
+        if (C08serviceAgreementName){
+            List<String> C05serviceAgreementName = serviceagreementBasicinformationService.SelectserviceAgreementName();
+            if (!C05serviceAgreementName.contains(val)){
+                errMsgList.add(String.format("C08[%s]必须与与C-05中填写的服务协议名称保持一致", cname));
+            }
+        }
+
+
+        /**
+         * C016
+         */
+
+        //必填项 如数值存在多位小数位数，保留两位
+        boolean c016required = annotation.c016required();
+        if(c016required && val.isEmpty()){
+            errMsgList.add(String.format("选择[服务产品]必须填写", cname));
+        }
+        if (c016required && !val.isEmpty()) {
+            String[] Split = val.split("\\.");
+            int num = 0;
+            if (Split.length > 1) {
+                for (int i = 0; i < Split[1].length(); i++) {
+                    num++;
+                }
+                if (num > 2) {
+                    errMsgList.add(String.format("如[服务产品]存在多位小数位数，保留两位", cname));
+                }
+            }
+        }
+
 
     }
 
@@ -712,9 +955,18 @@ public class ExcelUtils {
         }
         Map<String, JSONArray> map = new LinkedHashMap<>();
         for (int i = 0; i < book.getNumberOfSheets(); i++) {
-            Sheet sheet = book.getSheetAt(i);
-            JSONArray arr = readSheet(sheet);
-            map.put(sheet.getSheetName(), arr);
+
+            if (i == 0){
+                Sheet sheet = book.getSheetAt(i);
+                JSONArray arr = readSheet(sheet,"com.example.excel.entity.CustomerInformation");
+                map.put(sheet.getSheetName(), arr);
+            }
+            if (i == 1){
+                Sheet sheet = book.getSheetAt(i);
+                JSONArray arr = readSheet(sheet,"com.example.excel.entity.CustomerBillGenerationConditions");
+                map.put(sheet.getSheetName(), arr);
+            }
+
         }
         book.close();
         return map;
@@ -722,13 +974,26 @@ public class ExcelUtils {
 
     private static JSONArray readExcel(MultipartFile mFile, File file) throws IOException {
         Workbook book = getWorkbook(mFile, file);
+//        System.out.println(book);
         if (book == null) {
             return new JSONArray();
         }
-        JSONArray array = readSheet(book.getSheetAt(0));
+        JSONArray array = readSheet(book.getSheetAt(0),"1");
         book.close();
         return array;
     }
+
+    private static JSONArray readExcel(MultipartFile mFile, File file , String entity) throws IOException {
+        Workbook book = getWorkbook(mFile, file);
+//        System.out.println(book);
+        if (book == null) {
+            return new JSONArray();
+        }
+        JSONArray array = readSheet(book.getSheetAt(0),entity);
+        book.close();
+        return array;
+    }
+
 
     private static Workbook getWorkbook(MultipartFile mFile, File file) throws IOException {
         boolean fileNotExist = (file == null || !file.exists());
@@ -760,9 +1025,9 @@ public class ExcelUtils {
         return book;
     }
 
-    private static JSONArray readSheet(Sheet sheet) {
+    private static JSONArray readSheet(Sheet sheet ,String entity) {
         // 首行下标
-        int rowStart = sheet.getFirstRowNum();
+        int rowStart = sheet.getFirstRowNum() + 1;
         // 尾行下标
         int rowEnd = sheet.getLastRowNum();
         // 获取表头行
@@ -797,6 +1062,62 @@ public class ExcelUtils {
             array.add(obj);
             return array;
         }
+        //C01 : com.example.excel.entity.BasiInformation 跳一行
+        if ("com.example.excel.entity.BasiInformation".equals(entity)){
+            ignore1lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C02 : com.example.excel.entity.CustomerInformation 跳两行
+        if ("com.example.excel.entity.CustomerInformation".equals(entity)){
+            ignore2lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C0202 : com.example.excel.entity.CustomerBillGenerationConditions 跳三行
+        if ("com.example.excel.entity.CustomerBillGenerationConditions".equals(entity)){
+            ignore3lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C03 : com.example.excel.entity.CustomerSettlementUnit 跳三行
+        if ("com.example.excel.entity.CustomerSettlementUnit".equals(entity)){
+            ignore3lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C04 : com.example.excel.entity.SubCustomerInformation 跳零行
+        if ("com.example.excel.entity.SubCustomerInformation".equals(entity)) {
+            ignore0lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C05 : com.example.excel.entity.ServiceagreementBasicinformation 跳4行
+        if ("com.example.excel.entity.ServiceagreementBasicinformation".equals(entity)){
+            ignore4lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C06 : com.example.excel.entity.ServiceAgreementItems 跳三十一行
+        if ("com.example.excel.entity.ServiceAgreementItems".equals(entity)){
+            ignore31lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C08 : com.example.excel.entity.CustomerFirstlevel 跳七行
+        if ("com.example.excel.entity.CustomerFirstlevel".equals(entity)){
+            ignore7lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C07 : com.example.excel.entity.CustomerContractBasicInformation 跳五行
+        if ("com.example.excel.entity.CustomerContractBasicInformation".equals(entity)){
+            ignore5lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        //C016 : com.example.excel.entity.PayrollInitialization 跳两行
+        if ("com.example.excel.entity.PayrollInitialization".equals(entity)){
+            ignore2lines(rowStart,rowEnd,sheet,cellStart,cellEnd,keyMap,array);
+        }
+        return array;
+    }
+
+    /**
+     * 正文忽略0行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore0lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
         for (int i = rowStart + 1; i <= rowEnd; i++) {
             Row eachRow = sheet.getRow(i);
             JSONObject obj = new JSONObject();
@@ -815,7 +1136,235 @@ public class ExcelUtils {
                 array.add(obj);
             }
         }
-        return array;
+    }
+    /**
+     * 正文忽略1行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore1lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 2; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+
+    /**
+     * 正文忽略2行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore2lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 3; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+
+    /**
+     * 正文忽略3行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore3lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 4; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+    /**
+     * 正文忽略4行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore4lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 5; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+
+    /**
+     * 正文忽略5行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore5lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 6; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+
+    /**
+     * 正文忽略7行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore7lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 8; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
+    }
+
+    /**
+     * 正文忽略31行
+     * @param rowStart
+     * @param rowEnd
+     * @param sheet
+     * @param cellStart
+     * @param cellEnd
+     * @param keyMap
+     * @param array
+     */
+    public static void ignore31lines(int rowStart,int rowEnd,Sheet sheet,
+                                    int cellStart,int cellEnd,Map<Integer, String> keyMap,
+                                    JSONArray array){
+        for (int i = rowStart + 32; i <= rowEnd; i++) {
+            Row eachRow = sheet.getRow(i);
+            JSONObject obj = new JSONObject();
+            // 添加行号
+            obj.put(ROW_NUM, i + 1);
+            StringBuilder sb = new StringBuilder();
+            for (int k = cellStart; k < cellEnd; k++) {
+                if (eachRow != null) {
+                    String val = getCellValue(eachRow.getCell(k));
+                    // 所有数据添加到里面，用于判断该行是否为空
+                    sb.append(val);
+                    obj.put(keyMap.get(k), val);
+                }
+            }
+            if (sb.length() > 0) {
+                array.add(obj);
+            }
+        }
     }
 
     private static String getCellValue(Cell cell) {
@@ -1339,7 +1888,7 @@ public class ExcelUtils {
         if (o instanceof String) {
             String s = o.toString();
             // 当数字类型长度超过8位时，改为字符串类型显示（Excel数字超过一定长度会显示为科学计数法）
-            if (isNumeric(s) && s.length() < 8) {
+            if (isNumeric(s) && !s.isEmpty() && s.length() < 8) {
                 cell.setCellType(CellType.NUMERIC);
                 cell.setCellValue(Double.parseDouble(s));
                 return CELL_OTHER;
