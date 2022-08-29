@@ -35,6 +35,12 @@ public interface ServiceAgreementItemsMapper {
      */
      List<String> selectServiceAgreementNameByServiceItems(String serviceItems);
 
+    /**
+     * 删除ServiceAgreementItems中所有数据
+     * @return
+     */
+     int deleteServiceAgreementItems();
+
 
 
 }

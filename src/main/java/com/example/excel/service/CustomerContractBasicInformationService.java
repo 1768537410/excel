@@ -33,4 +33,8 @@ public class CustomerContractBasicInformationService {
     public List<String> selectCustomerContractBasicInformationBycontractLevel(String contractLevel){
         return customerContractBasicInformationMapper.selectCustomerContractBasicInformationBycontractLevel(contractLevel);
     }
+
+    public void deleteCustomerContractBasicInformation(){
+        customerContractBasicInformationMapper.deleteCustomerContractBasicInformation();
+    }
 }

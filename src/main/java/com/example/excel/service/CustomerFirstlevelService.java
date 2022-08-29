@@ -36,6 +36,12 @@ public class CustomerFirstlevelService {
         return customerFirstlevelMapper.selectserviceAgreementNameBycontractTitle(contractTitle);
     }
 
+    /**
+     * 删除CustomerFirstlevel中的数据
+     */
+    public void deleteCustomerFirstlevel(){
+        customerFirstlevelMapper.deleteCustomerFirstlevel();
+    }
 
 
 

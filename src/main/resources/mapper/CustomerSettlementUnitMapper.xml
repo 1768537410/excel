@@ -22,5 +22,8 @@
         #{customerAbbreviation}, #{clearingUnitNumber},#{settlementUnitName}
         )
     </insert>
+    <delete id="deleteCustomerSettlementUnit">
+        delete from customer_settlement_unit
+    </delete>
 
 </mapper>

@@ -1,6 +1,5 @@
 package com.example.excel.service;
 
-import com.example.excel.entity.BasiInformation;
 import com.example.excel.entity.CustomerBillGenerationConditions;
 import com.example.excel.mapper.CustomerBillGenerationConditionsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,13 @@ public class CustomerBillGenerationConditionsService {
     public CustomerBillGenerationConditions findCustomerAbbreviationByBillGenerationConditionName(String billGenerationConditionName){
 
         return customerBillGenerationConditionsMapper.selectCustomerAbbreviationByBillGenerationConditionName(billGenerationConditionName);
+    }
+
+    /**
+     * 删除CustomerBillGenerationConditions所有数据
+     */
+    public void deleteCustomerbillGenerationconditions(){
+        customerBillGenerationConditionsMapper.deleteCustomerBillGenerationConditions();
     }
 
 

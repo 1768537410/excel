@@ -42,4 +42,11 @@ public class ServiceagreementBasicinformationService {
     public List<String> SelectServiceAgreementNameByChargeServiceFee(String chargeServiceFee){
         return serviceagreementBasicinformationMapper.SelectServiceAgreementNameByChargeServiceFee(chargeServiceFee);
     }
+
+    /**
+     * 删除ServiceagreementBasicinformation中所有数据
+     */
+    public void deleteServiceagreementBasicinformation(){
+        serviceagreementBasicinformationMapper.deleteServiceagreementBasicinformation();
+    }
 }

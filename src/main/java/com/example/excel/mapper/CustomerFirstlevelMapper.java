@@ -28,4 +28,10 @@ public interface CustomerFirstlevelMapper {
      */
     List<String> selectserviceAgreementNameBycontractTitle(String contractTitle);
 
+    /**
+     * 删除CustomerFirstlevel中的数据
+     * @return
+     */
+    int deleteCustomerFirstlevel();
+
 }

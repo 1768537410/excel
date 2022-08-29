@@ -14,6 +14,9 @@
         #{contractTitle}, #{serviceAgreementName}
         )
     </insert>
+    <delete id="deleteCustomerFirstlevel">
+        delete from customer_firstlevel
+    </delete>
     <select id="selectserviceAgreementNameBycontractTitle" resultType="java.lang.String">
         select serviceAgreement_name from customer_firstlevel where contract_title = #{contractTitle}
     </select>

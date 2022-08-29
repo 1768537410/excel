@@ -46,4 +46,11 @@ public class SubCustomerInformationService {
         return subCustomerInformationMapper.selectSubCustomerInformationBycustomerNumber(customerNumber);
     }
 
+    /**
+     * 删除SubCustomerInformation所有数据
+     */
+    public void deleteSubCustomerInformation(){
+        subCustomerInformationMapper.deleteSubCustomerInformation();
+    }
+
 }

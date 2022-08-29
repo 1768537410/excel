@@ -22,7 +22,7 @@
     </sql>
 
     <insert id="insertBasiInformation"  keyProperty="id">
-        insert into basic_information (<include refid="insertBasicInformation"></include>)
+        insert into basic_information (<include refid="insertBasicInformation"/>)
         values(
                #{customerName}, #{customerAbbreviation}, #{customerNumber},
                #{affiliatedGroup}, #{enterpriseNature}, #{uniformSCCode},
@@ -39,6 +39,9 @@
                #{contactEmailTwo}, #{contactMailingDdressTwo},#{contactNoteTwo}
                )
     </insert>
+    <delete id="deleteBasiInformation">
+        delete from basic_information
+    </delete>
 
     <select id="selectBasiInformationBycustomerAbbreviation"
             resultType="com.example.excel.entity.BasiInformation">

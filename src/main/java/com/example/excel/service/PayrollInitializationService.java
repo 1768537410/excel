@@ -25,4 +25,11 @@ public class PayrollInitializationService {
         int rows = payrollInitializationMapper.insertPayrollInitialization(payrollInitialization);
         return rows;
     }
+
+    /**
+     * 删除PayrollInitialization中所有数据
+     */
+    public void deletePayrollInitialization(){
+        payrollInitializationMapper.deletePayrollInitialization();
+    }
 }

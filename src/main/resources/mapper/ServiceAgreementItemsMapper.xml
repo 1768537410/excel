@@ -19,6 +19,9 @@
                #{accountingType}
                )
     </insert>
+    <delete id="deleteServiceAgreementItems">
+        delete from serviceagreement_items
+    </delete>
     <select id="selectchargingMethodByserviceAgreementName" resultType="java.lang.String">
         select chargingMethod from serviceagreement_items where serviceAgreement_name = #{serviceAgreementName}
     </select>

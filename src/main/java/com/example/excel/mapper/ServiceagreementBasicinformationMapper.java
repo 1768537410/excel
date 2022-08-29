@@ -34,4 +34,10 @@ public interface ServiceagreementBasicinformationMapper {
      */
     List<String> SelectServiceAgreementNameByChargeServiceFee(String chargeServiceFee);
 
+    /**
+     * 删除ServiceagreementBasicinformation中所有数据
+     * @return
+     */
+    int deleteServiceagreementBasicinformation();
+
 }

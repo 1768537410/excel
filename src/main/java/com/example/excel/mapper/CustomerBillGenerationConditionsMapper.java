@@ -26,4 +26,10 @@ public interface CustomerBillGenerationConditionsMapper {
      */
     CustomerBillGenerationConditions selectCustomerAbbreviationByBillGenerationConditionName(String billGenerationConditionName);
 
+    /**
+     * 删除CustomerBillGenerationConditions所有数据
+     * @return
+     */
+    int deleteCustomerBillGenerationConditions();
+
 }

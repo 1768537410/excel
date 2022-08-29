@@ -14,7 +14,7 @@
     </sql>
 
     <insert id="insertCustomerBillGenerationConditions" keyProperty="id">
-        insert into customerbill_generationconditions (<include refid="insertCustomerBillGenerationConditionse"></include>)
+        insert into customerbill_generationconditions (<include refid="insertCustomerBillGenerationConditionse"/>)
         values(
         #{billGenerationConditionName}, #{descriptionBillGenerationConditions}, #{socialSecurityFee},
         #{medicalInsuranceCosts}, #{workInjuryExpenses}, #{providentFundFee},
@@ -25,10 +25,14 @@
 
         )
     </insert>
+    <delete id="deleteCustomerBillGenerationConditions">
+        delete from customerbill_generationconditions
+    </delete>
     <select id="selectCustomerAbbreviationByBillGenerationConditionName"
             resultType="com.example.excel.entity.CustomerBillGenerationConditions">
         select customer_abbreviation from customerbill_generationconditions
         where billGenerationConditionName = #{billGenerationConditionName}
     </select>
+
 
 </mapper>

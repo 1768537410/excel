@@ -48,6 +48,9 @@
         #{contractNumber}, #{reminderNotReceipt}
         )
     </insert>
+    <delete id="deleteCustomerContractBasicInformation">
+        delete from customercontract_basicinformation
+    </delete>
     <select id="selectCustomerContractBasicInformationBycontractLevel" resultType="java.lang.String">
         SELECT contract_title from customercontract_basicinformation where contract_level = #{contractLevel}
     </select>

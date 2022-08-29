@@ -17,4 +17,10 @@ public interface CustomerSettlementUnitMapper {
      * @return
      */
     int insertCustomerSettlementUnit(CustomerSettlementUnit customerSettlementUnit);
+
+    /**
+     * 删除CustomerSettlementUnit所有数据
+     * @return
+     */
+    int deleteCustomerSettlementUnit();
 }

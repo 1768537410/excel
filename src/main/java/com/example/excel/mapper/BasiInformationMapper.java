@@ -30,4 +30,10 @@ public interface BasiInformationMapper {
      */
     BasiInformation selectBasiInformationBycustomerNumber(String customerNumber);
 
+    /**
+     * 删除BasiInformation表中的所有数据
+     * @return
+     */
+    int deleteBasiInformation();
+
 }

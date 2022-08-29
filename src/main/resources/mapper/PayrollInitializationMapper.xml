@@ -52,5 +52,8 @@
         #{taxDocumentType},#{taxLicenseNumber}, #{employmentSituation}
         )
     </insert>
+    <delete id="deletePayrollInitialization">
+        delete from payroll_initialization
+    </delete>
 
 </mapper>

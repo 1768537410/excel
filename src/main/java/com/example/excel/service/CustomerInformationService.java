@@ -24,4 +24,11 @@ public class CustomerInformationService {
         int rows = customerInformationMapper.insertCustomerInformation(customerInformation);
         return rows;
     }
+
+    /**
+     * 删除CustomerInformation所有数据
+     */
+    public void deleteCustomerInformation(){
+        customerInformationMapper.deleteCustomerInformation();
+    }
 }

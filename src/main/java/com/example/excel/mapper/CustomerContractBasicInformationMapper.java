@@ -27,6 +27,12 @@ public interface CustomerContractBasicInformationMapper {
      */
     List<String> selectCustomerContractBasicInformationBycontractLevel(String contractLevel);
 
+    /**
+     * 删除CustomerContractBasicInformation中的数据
+     * @return
+     */
+    int deleteCustomerContractBasicInformation();
+
 
 
 }

@@ -32,6 +32,9 @@
         #{chargingMethod}, #{serviceAgreementNumber}
         )
     </insert>
+    <delete id="deleteServiceagreementBasicinformation">
+        delete from serviceagreement_basicinformation
+    </delete>
     <select id="SelectserviceAgreementName" resultType="java.lang.String">
         select serviceAgreement_name from serviceagreement_basicinformation
     </select>

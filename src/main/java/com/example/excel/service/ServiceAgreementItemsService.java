@@ -44,4 +44,11 @@ public class ServiceAgreementItemsService {
         return serviceAgreementItemsMapper.selectServiceAgreementNameByServiceItems(serviceItems);
     }
 
+    /**
+     * 删除ServiceAgreementItems中的所有数据
+     */
+    public void deleteServiceAgreementItems(){
+        serviceAgreementItemsMapper.deleteServiceAgreementItems();
+    }
+
 }

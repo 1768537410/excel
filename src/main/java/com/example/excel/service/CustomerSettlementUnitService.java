@@ -25,4 +25,11 @@ public class CustomerSettlementUnitService {
         int rows = customerSettlementUnitMapper.insertCustomerSettlementUnit(customerSettlementUnit);
         return rows;
     }
+
+    /**
+     * 删除CustomerSettlementUnit中所有数据
+     */
+    public void deleteCustomerSettlementUnit(){
+        customerSettlementUnitMapper.deleteCustomerSettlementUnit();
+    }
 }

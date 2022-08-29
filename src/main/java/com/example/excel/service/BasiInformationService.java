@@ -44,5 +44,12 @@ public class BasiInformationService {
         return basiInformationMapper.selectBasiInformationBycustomerNumber(customerNumber);
     }
 
+    /**
+     * 删除C01数据库中的所有数据
+     */
+    public void deleteBasiInformation(){
+        basiInformationMapper.deleteBasiInformation();
+    }
+
 
 }

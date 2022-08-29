@@ -14,5 +14,8 @@
         )
 
     </insert>
+    <delete id="deleteCustomerInformation">
+        delete from customer_information
+    </delete>
 
 </mapper>

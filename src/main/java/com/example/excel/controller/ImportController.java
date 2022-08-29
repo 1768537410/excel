@@ -457,8 +457,20 @@ public class ImportController {
         }
     }
 
-
-
+    @PostMapping("/deleteAll")
+    @ResponseBody
+    public void deleteAll(){
+        basiInformationService.deleteBasiInformation();
+        customerBillGenerationConditionsService.deleteCustomerbillGenerationconditions();
+        customerContractBasicInformationService.deleteCustomerContractBasicInformation();
+        customerFirstlevelService.deleteCustomerFirstlevel();
+        customerInformationService.deleteCustomerInformation();
+        customerSettlementUnitService.deleteCustomerSettlementUnit();
+        payrollInitializationService.deletePayrollInitialization();
+        serviceagreementBasicinformationService.deleteServiceagreementBasicinformation();
+        serviceAgreementItemsService.deleteServiceAgreementItems();
+        subCustomerInformationService.deleteSubCustomerInformation();
+    }
 
 
 

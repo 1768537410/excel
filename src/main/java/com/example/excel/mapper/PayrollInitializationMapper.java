@@ -18,4 +18,10 @@ public interface PayrollInitializationMapper {
      */
     int insertPayrollInitialization(PayrollInitialization payrollInitialization);
 
+    /**
+     * 删除PayrollInitialization中所有数据
+     * @return
+     */
+    int deletePayrollInitialization();
+
 }

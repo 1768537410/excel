@@ -15,6 +15,12 @@ public interface CustomerInformationMapper {
      */
     int insertCustomerInformation(CustomerInformation customerInformation);
 
+    /**
+     * 删除CustomerInformation数据
+     * @return
+     */
+    int deleteCustomerInformation();
+
 
 
 

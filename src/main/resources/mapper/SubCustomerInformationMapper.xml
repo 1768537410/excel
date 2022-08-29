@@ -17,6 +17,9 @@
         #{customerAbbreviation}, #{customerNumber}, #{remarks}
         )
     </insert>
+    <delete id="deleteSubCustomerInformation">
+        delete from subcustomer_information
+    </delete>
 
     <select id="selectSubCustomerInformationBycustomerAbbreviation"
             resultType="com.example.excel.entity.SubCustomerInformation">

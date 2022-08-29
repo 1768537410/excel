@@ -30,4 +30,10 @@ public interface SubCustomerInformationMapper {
      * @return
      */
     SubCustomerInformation selectSubCustomerInformationBycustomerNumber(String customerNumber);
+
+    /**
+     * 删除SubCustomerInformation中所有数据
+     * @return
+     */
+    int deleteSubCustomerInformation();
 }
