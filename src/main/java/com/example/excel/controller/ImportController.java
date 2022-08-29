@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.example.excel.entity.*;
 import com.example.excel.service.*;
 import com.example.excel.util.ExcelUtils;
+import com.example.excel.util.Vo.ResultCode;
+import com.example.excel.util.Vo.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -95,7 +97,7 @@ public class ImportController {
      */
     @PostMapping("/classC01")
     @ResponseBody
-    public void importClassC01(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
+    public ResultVO importClassC01(HttpServletResponse response,@RequestPart("file")MultipartFile file) throws Exception {
         //获取处理完Excel的数据
         List<BasiInformation> users = ExcelUtils.readMultipartFile(file,BasiInformation.class);
         //创建一个集合来存放错误信息
@@ -111,15 +113,12 @@ public class ImportController {
             //循环遍历导入数据库
             for (BasiInformation user : users) {
                 basiInformationService.insertBasiInformation(user);
-                System.out.println(user.getRowNum() + "导入成功");
             }
+            return new ResultVO(ResultCode.SUCCESS,"导入成功!");
         }else {
                 // 导出数据
                 ExcelUtils.export(response,"C01错误提示", users ,BasiInformation.class);
-            //循环遍历导入数据库
-            for (BasiInformation user : users) {
-                System.out.println(user.getRowNum() + user.getRowTips() + "导入失败");
-            }
+            return new ResultVO(ResultCode.FILE_UPLOAD_ERROR.getCode(),"导入失败!");
         }
     }
 
@@ -459,7 +458,7 @@ public class ImportController {
 
     @PostMapping("/deleteAll")
     @ResponseBody
-    public void deleteAll(){
+    public ResultVO deleteAll(){
         basiInformationService.deleteBasiInformation();
         customerBillGenerationConditionsService.deleteCustomerbillGenerationconditions();
         customerContractBasicInformationService.deleteCustomerContractBasicInformation();
@@ -470,6 +469,7 @@ public class ImportController {
         serviceagreementBasicinformationService.deleteServiceagreementBasicinformation();
         serviceAgreementItemsService.deleteServiceAgreementItems();
         subCustomerInformationService.deleteSubCustomerInformation();
+        return new ResultVO(ResultCode.SUCCESS,"成功清除!");
     }
 
 
